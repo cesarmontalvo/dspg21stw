@@ -1,3 +1,1 @@
-# project_template
-#heyyyyy
-#hiiii
+This is the repository for the DSPG 2021 STW project.
