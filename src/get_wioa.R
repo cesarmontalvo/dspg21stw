@@ -1,13 +1,23 @@
+library(here)
+library(curl)
+library(gtools)
+
+# download file
+
+dest_file <- "/sfs/qumulo/qhome/sm9dv/dspg21stw/data/dspg21stw/original/PY2019Q4.gz"
+url <- "https://www.dol.gov/sites/dolgov/files/eta/performance/pdfs/PY2019/WIOAPerformanceRecords_PY2019Q4_Public_csv.gz"
+download.file(url, dest_file, method = "libcurl")
+system(command = paste("gunzip -c ~/dspg21stw/data/dspg21stw/original/PY2019Q4.gz > ~/dspg21stw/data/dspg21stw/original/PY2019Q4.csv", sep = ""))
+
+
+
 library(data.table)
 
-### first create a symlink THIS IS ALREADY DONE SO YOU DONT NEED TO DO IT
-#system(command = "ln -s /project/biocomplexity/sdad/projects_data/ncses/stw/original/wioa/ /sfs/qumulo/qhome/sm9dv/dspg21stw/data/dspg21stw/original/")
-
 ### reading in 2019 Q4. use data.table because it is faster than read.csv() and this is a big file
-data <- fread("~/dspg21stw/data/dspg21stw/original/wioa/PY2019Q4.csv")
+data <- fread("~/dspg21stw/data/dspg21stw/original/PY2019Q4.csv")
 head(data)
 
-names <- read.delim("~/dspg21stw/data/dspg21stw/original/wioa/Q42019names.txt", header = F)
+names <- read.delim("~/dspg21stw/data/dspg21stw/original/Q42019names.txt", header = F)
 
 colnames(data) <- c(names$V1)
 head(data)
@@ -44,6 +54,6 @@ final_names <- paste("PIRL", final_names, sep = " ")
 
 options(useFancyQuotes = FALSE)
 final_names <- dQuote(final_names)
-#fwrite(list(final_names), file = "~/dspg21stw/data/dspg21stw/original/wioa/Q42019names.txt", quote = F)
+#fwrite(list(final_names), file = "~/dspg21stw/data/dspg21stw/original/Q42019names.txt", quote = F)
 
 
