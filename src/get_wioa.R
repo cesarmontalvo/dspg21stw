@@ -1,7 +1,7 @@
 library(data.table)
 
-### first create a symlink
-system(command = "ln -s /project/biocomplexity/sdad/projects_data/ncses/stw/original/wioa/ /sfs/qumulo/qhome/sm9dv/dspg21stw/data/dspg21stw/original/")
+### first create a symlink THIS IS ALREADY DONE SO YOU DONT NEED TO DO IT
+#system(command = "ln -s /project/biocomplexity/sdad/projects_data/ncses/stw/original/wioa/ /sfs/qumulo/qhome/sm9dv/dspg21stw/data/dspg21stw/original/")
 
 ### reading in 2019 Q4. use data.table because it is faster than read.csv() and this is a big file
 data <- fread("~/dspg21stw/data/dspg21stw/original/wioa/PY2019Q4.csv")
