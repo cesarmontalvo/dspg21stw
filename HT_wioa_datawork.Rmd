@@ -9,22 +9,81 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(readxl)
+options(scipen = 999)
 ```
 
-## Including Plots
+Importing the data:
 
-You can also embed plots, for example:
+```{r}
+# setwd("~/dspg21stw/data/dspg21stw/original/wioa_2021")
+# wioa <- read_csv("PY2019Q4_processed.csv")
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+#immediately select and subset to VA
+
+
+#Selecting just a few of the variables from the data dictionary (which is available on teams in the WIOA folder, Performance Records Public Use File)
+
+# w <- wioa %>% select(PIRL100, PIRL.3000, PIRL1610, PIRL1800, PIRL.3007, PIRL400, PIRL408, PIRL1300,
+#                           PIRL1301, PIRL1303, PIRL1306, PIRL1310, PIRL1316,
+#                           PIRL201, PIRL.3023)
+# 
+# w <- w %>% transmute(id = PIRL100,
+#                                      state = PIRL.3000,
+#                                      occup_code = PIRL1610,
+#                                      type_cred = PIRL1800,
+#                                      skill_gain_dummy = PIRL.3007,
+#                                      emp_status = PIRL400,
+#                                      edu_attain = PIRL408,
+#                                      training_dummy = PIRL1300,
+#                                      training_provider = PIRL1301,
+#                                      training_type = PIRL1303,
+#                                      skills_training1 = PIRL1306,
+#                                      skills_training2 = PIRL1310,
+#                                      skills_training3 = PIRL1316,
+#                      sex = PIRL201,
+#                      race = PIRL.3023)
+
+#w_va <- w[w$state == "VA",]
+
+#saveRDS(w_va, "wioa_VA_2019.rds")
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+```{r}
+setwd("/project/biocomplexity/sdad/projects_data/ncses/stw/original/wioa_2021/stw_2021")
+stw <- read_xlsx("STW_2021.xlsx")
+```
+
+subsetting to those in the STW (found on the stw_2021.xlsx also available in teams, the STW folder.)
+```{r}
+head(stw)
+```
+
+
+```{r}
+#remove the dash in SOC 
+stw$SOC <- gsub("-", "", stw$SOC)
+```
+
+```{r}
+#joining the data
+d <- w %>% left_join(stw, by = c("occup_code" = "SOC"))
+```
+
+```{r}
+#selecting only those that have STW SOCs
+d2 <- d[is.na(d$NAME) == FALSE]
+```
+
+
+Subsetting to only VA:
+
+```{r}
+
+```
+
+
