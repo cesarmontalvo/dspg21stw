@@ -55,6 +55,7 @@ Importing the data:
 
 ```{r}
 setwd("/project/biocomplexity/sdad/projects_data/ncses/stw/original/wioa_2021/stw_2021")
+wioa <- readRDS("wioa_VA_2019.rds")
 stw <- read_xlsx("STW_2021.xlsx")
 ```
 
@@ -63,27 +64,45 @@ subsetting to those in the STW (found on the stw_2021.xlsx also available in tea
 head(stw)
 ```
 
+```{r}
+head(d)
+```
+
+```{r}
+table(is.na(wioa$occup_code))
+sum(is.na(w$occup_code))
+table(is.na(w$occup_code[w$state == "VA"]))
+length(wioa$id)
+```
+ok, so in VA we only have 4,476 individuals with occupational codes... :(
 
 ```{r}
 #remove the dash in SOC 
 stw$SOC <- gsub("-", "", stw$SOC)
+
+stw$SOC <- as.integer(stw$SOC)
 ```
+
 
 ```{r}
 #joining the data
-d <- w %>% left_join(stw, by = c("occup_code" = "SOC"))
+d <- wioa %>% left_join(stw, by = c("occup_code" = "SOC"))
 ```
 
 ```{r}
-#selecting only those that have STW SOCs
-d2 <- d[is.na(d$NAME) == FALSE]
+#selecting only those that have STW SOCs.  Every STW soc has a NAME so if it didn't match up, the NAME should be NA
+d2 <- d[is.na(d$NAME) == FALSE,]
 ```
 
-
-Subsetting to only VA:
 
 ```{r}
-
+d %>% select(state, occup_code, NAME) %>% arrange(desc(NAME))
 ```
+
+```{r}
+d2
+```
+
+
 
 
