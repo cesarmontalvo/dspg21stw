@@ -103,6 +103,20 @@ d %>% select(state, occup_code, NAME) %>% arrange(desc(NAME))
 d2
 ```
 
+```{r, fig.height = 10}
+ggplot(d2, aes(NAME)) + geom_bar() + labs(x = "STW occupation name", title = "Distribution of workers with STW jobs in VA in 2019", subtitle = "WIOA 2019") + theme(axis.text.x = element_text(angle = 90, vjust = .3, hjust = .1)) + coord_flip() + theme_minimal()
+```
 
+```{r, fig.height = 10}
+ggplot(d2, aes(NAME)) + geom_bar() + labs(x = "STW occupation name", title = "Distribution of workers with STW jobs in VA in 2019 who did (1) or did not (0) receive training", subtitle = "WIOA 2019") + theme(axis.text.x = element_text(angle = 90, vjust = .3, hjust = .1)) + coord_flip() + theme_minimal() + facet_wrap(~training_dummy)
+```
 
+```{r, fig.height = 10}
+ggplot(d2, aes(NAME)) + geom_bar() + labs(x = "STW occupation name", title = "Distribution of workers with STW jobs in VA in 2019 who did (1) or did not (0) receive training", subtitle = "WIOA 2019") + theme(axis.text.x = element_text(angle = 90, vjust = .3, hjust = .1)) + coord_flip() + theme_minimal() + facet_wrap(~type_cred)
+```
+#PIRL1800 = "Type of recognized Credential (WIOA)
+## secondary school, AA or AS Diploma, BA or BS, Occupational Licensure
+## Occupational Certificate, Occupational Certification, other, none
+
+So, a lot require you to have finished secondary school and honestly most of these people have that.  Occupational certification is the next highest one where almost all have it. 
 
