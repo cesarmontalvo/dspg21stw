@@ -19,7 +19,7 @@ options(scipen = 999)
 Importing the data:
 
 ```{r}
-# setwd("~/dspg21stw/data/dspg21stw/original/wioa_2021")
+# setwd("~/dspg21stw/data/dspg21stw/original/wioa_2021/stw_2021")
 # wioa <- read_csv("PY2019Q4_processed.csv")
 
 #immediately select and subset to VA
@@ -65,13 +65,9 @@ head(stw)
 ```
 
 ```{r}
-head(d)
-```
-
-```{r}
+#sum(is.na(w$occup_code))
+#table(is.na(w$occup_code[w$state == "VA"]))
 table(is.na(wioa$occup_code))
-sum(is.na(w$occup_code))
-table(is.na(w$occup_code[w$state == "VA"]))
 length(wioa$id)
 ```
 ok, so in VA we only have 4,476 individuals with occupational codes... :(
@@ -83,7 +79,6 @@ stw$SOC <- gsub("-", "", stw$SOC)
 stw$SOC <- as.integer(stw$SOC)
 ```
 
-
 ```{r}
 #joining the data
 d <- wioa %>% left_join(stw, by = c("occup_code" = "SOC"))
@@ -94,9 +89,12 @@ d <- wioa %>% left_join(stw, by = c("occup_code" = "SOC"))
 d2 <- d[is.na(d$NAME) == FALSE,]
 ```
 
+```{r}
+dim(d2)
+```
 
 ```{r}
-d %>% select(state, occup_code, NAME) %>% arrange(desc(NAME))
+d2 %>% select(state, occup_code, NAME) %>% arrange(desc(NAME))
 ```
 
 ```{r}

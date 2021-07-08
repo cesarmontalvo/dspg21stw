@@ -1,0 +1,226 @@
+---
+title: "HT_network_analysis"
+author: "Haleigh Tomlin"
+date: "7/7/2021"
+output: html_document
+---
+
+# Exploratory Network Analysis of Credentials and SOC codes
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+# install.packages("statnet")
+# install.packages("igraph")
+# install.packages("tidyverse")
+# install.packages("devtools")
+# install.packages("intergraph")
+```
+
+```{r}
+library(statnet)
+library(tidyverse)
+library(devtools)
+library(readxl)
+library(intergraph)
+```
+
+
+```{r}
+cert <- read_xlsx("ONET_SOC_credentials.xlsx")
+```
+
+```{r}
+head(cert)
+```
+
+
+We are interested in the usefullness of certifications.  How portable are they?  If you get a certification, how many different jobs can you do?  What are they?
+
+To answer this, we will have "certification" as our nodes, and edges will be jobs.  This way, we can assess the centrality of a certification to jobs, and how connected certifications are within job areas.  Then, we can create a list of certifications that are only useful in unique occupations.
+
+Making an edge-list:
+
+```{r}
+netmat <- cbind(cert$Certification.Name, cert$SOC)
+```
+
+
+```{r}
+net <- network(netmat, matrix.type = "edgelist", directed = F)
+```
+
+Turning our network into an undirected graph:
+
+```{r}
+detach(package:statnet)
+library(igraph)
+```
+
+```{r}
+class(net)
+```
+
+```{r}
+net_igraph <- asIgraph(net)
+
+net1_igraph <- as.undirected(net_igraph)
+
+net_undirected <- asNetwork(net1_igraph)
+```
+
+```{r}
+detach(package:igraph)
+library(statnet)
+```
+
+
+```{r}
+summary(net_undirected, print.adj = F)
+```
+
+
+
+```{r, fig.height = 10}
+gplot(net_undirected, usearrows = F)
+```
+
+```{r}
+network.size(net)
+```
+
+So, we have 1054 nodes in our network
+
+```{r}
+summary(net, print.adj = F)
+```
+
+Not a super dense network but there are certainly clusters.
+
+```{r}
+gden(net)
+```
+
+
+```{r}
+components(net)
+```
+
+That doesnt make sense, there should be less components than there are nodes
+
+```{r}
+#lgc <- component.dist(net)
+#gd <- geodist(lgc)
+#max(gd$gdist)
+```
+ Having some trouble getting the # of components, and the diameter of the largest component.
+ 
+```{r}
+#component.dist(net)
+```
+
+Clustering coefficient:
+
+```{r}
+gtrans(net, mode = "graph")
+```
+
+```{r, fig.height = 10}
+op <- par(mar = rep(0,4))
+gplot(net, displaylabels = T,
+      usearrows = F,
+      main = "Network of ONET Certifications and Corresponding Occupations",
+      vertex.col = "lightblue", vertex.cex = 1.3,
+      label.cex = 0.4, label.pos = 5)
+
+par(op)
+```
+
+Ok, so it is definitely certifications as the nodes (I set labels = T and it was the certifications, but so so messy)
+
+Next I will make nodes bigger if they have higher centrality
+
+```{r}
+deg <- degree(net, gmode = "graph")
+cls <- closeness(net, gmode = "graph")
+bet <- betweenness(net, gmode = "graph")
+```
+
+```{r}
+rescale <- function(nchar, low, high) {
+  min_d <- min(nchar)
+  max_d <- max(nchar)
+  rscl <- ((high - low)* (nchar - min_d)) / (max_d - min_d) + low
+  rscl
+}
+```
+
+
+```{r, fig.height = 10}
+op <- par(mar = rep(0,4))
+gplot(net, displaylabels = F,
+      usearrows = F,
+      main = "Network of ONET Certifications and Corresponding Occupations",
+      vertex.col = "lightblue", vertex.cex = log(deg))
+
+par(op)
+```
+```{r}
+install.packages("plotly")
+library(plotly)
+```
+
+
+```{r, fig.height = 10}
+op <- par(mar = rep(0,4))
+graph1 <- gplot(net, displaylabels = F,
+      usearrows = F,
+      main = "Network of ONET Certifications and Corresponding Occupations",
+      vertex.col = "lightblue", vertex.cex = rescale(deg,1,6))
+
+plotly(graph1)
+par(op)
+```
+
+```{r}
+head(cert)
+```
+
+trying to make a table of the Centrality of each credential (modeled off page 99 in Luke networks book. https://link.springer.com/book/10.1007/978-3-319-23883-8)
+
+
+#detach(package:statnet)
+library(igraph)
+
+df.prom <- data.frame(
+  degree = degree(net_igraph),
+  closeness = closeness(net_igraph),
+  betweenness = betweenness(net_igraph)
+)
+
+#row.names(df.prom) <- net_igraph %v% "vertex.names"
+
+df.promsort <- df.prom[order(-df.prom$degree),]
+cd <- centralization(net_igraph, degree)
+cc <- centralization(net_igraph, closeness)
+cb <- centralization(net_igraph, betweenness)
+
+df.promsort <- rbind(df.promsort, c(cd,cc,cb))
+
+row.names(df.promsort)[18] <- "\\emph{Centralization}"
+
+
+```{r}
+#detach(package:igraph)
+library(statnet)
+```
+
+```{r}
+list.network.attributes(net)
+```
+
+
+
