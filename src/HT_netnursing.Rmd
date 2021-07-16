@@ -1,0 +1,142 @@
+---
+title: "HT_network_analysis2"
+author: "Haleigh Tomlin"
+date: "7/13/2021"
+output: html_document
+runtime: shiny
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#This doc will not run on its own
+
+Making diagrams of specifically the jobs that the NSF is interested in
+
+```{r}
+n <- as_data_frame(netmat)
+```
+
+
+```{r}
+#View(n)
+```
+
+```{r}
+n_nursing <- n[n$V2 == "29-1126" | n$V2 == "29-1292" | n$V2 == "29-2055" | n$V2 == "29-2056" | n$V2 == "29-9093",]
+```
+
+```{r}
+n_nursing <- as.matrix(n_nursing)
+```
+
+```{r}
+nursing_net <- network(n_nursing, matrix.type = "edgelist", directed = F)
+```
+
+```{r}
+gplot(nursing_net, usearrows = F, displaylabels = F)
+```
+
+```{r, fig.height = 10}
+library(networkD3)
+simpleNetwork(data.frame(n_nursing))
+```
+
+
+#cyber security
+
+```{r}
+setwd("/home/scb8kw/dspg21stw/data/dspg21stw/original/wioa_2021/stw_2021")
+cyber <- read.csv("Cyber_Credentials.csv")
+```
+
+```{r}
+head(cyber)
+```
+
+```{r}
+length(unique(cyber$ONETSOC))
+```
+
+cyber security in the STW:
+15-1232.00, 17-3023.00, 15-1232.00, 17-3023.00
+
+
+
+```{r}
+cybermat <- cyber %>% select(Certification.Name, ONETSOC)
+```
+
+n_nursing <- n[n$V2 == "29-1126" | n$V2 == "29-1292" | n$V2 == "29-2055" | n$V2 == "29-2056" | n$V2 == "29-9093",]
+```{r}
+cyber_stw <- cybermat[cybermat$ONETSOC == "15-1232.00" | cybermat$ONETSOC == "17-3023.00",]
+```
+
+
+```{r, fig.height = 10}
+net_D3 <- simpleNetwork(cyber_stw)
+saveNetwork(net_D3, file = 'cybernet_stw.html')
+```
+
+```{r}
+#install.packages("visNetwork")
+```
+
+
+
+
+```{r}
+#detach(package:statnet)
+library(igraph)
+```
+
+
+```{r}
+cyber_af <- graph.data.frame(cyber_stw)
+V(cyber_af)$type <- V(cyber_af)$name %in% cyber_stw[,1]
+
+cyber.pr <- bipartite.projection(cyber_af)
+```
+
+```{r}
+cyber.pr
+```
+
+
+
+```{r}
+cyber_creds <- cyber.pr$proj2
+cyber_credadj <- get.adjacency(cyber_creds, sparse = F, attr = "weight")
+```
+
+```{r}
+cyber_net <- network(cyber_credadj, matrix.type = "adjacency", directed = F)
+```
+
+```{r}
+icyber <- asIgraph(cyber_net)
+```
+
+```{r}
+library(visNetwork)
+icyber_edge <- (get.edgelist(icyber))
+icyber_edge <- data.frame(from = icyber_edge[,1],
+                          to = icyber_edge[,2])
+
+icyber_nodes <- data.frame(id = as.numeric(V(icyber)))
+
+nettest <- visNetwork(icyber_nodes, icyber_edge, width = "100%")
+```
+
+```{r}
+library(htmlwidgets)
+saveWidget(nettest, "cyber_stw_interactivetest.html")
+```
+
+
+```{r}
+gplot(cyber_net, usearrows = F, displaylabels = F)
+```
+
