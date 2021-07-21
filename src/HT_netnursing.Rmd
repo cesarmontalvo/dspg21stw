@@ -3,7 +3,6 @@ title: "HT_network_analysis2"
 author: "Haleigh Tomlin"
 date: "7/13/2021"
 output: html_document
-runtime: shiny
 ---
 
 ```{r setup, include=FALSE}
@@ -20,7 +19,7 @@ n <- as_data_frame(netmat)
 
 
 ```{r}
-#View(n)
+head(n)
 ```
 
 ```{r}
@@ -28,8 +27,22 @@ n_nursing <- n[n$V2 == "29-1126" | n$V2 == "29-1292" | n$V2 == "29-2055" | n$V2 
 ```
 
 ```{r}
+n_nursing
+```
+
+
+
+```{r}
 n_nursing <- as.matrix(n_nursing)
 ```
+
+```{r}
+nursing_af <- graph.data.frame(data.frame(n))
+V(nursing_af)$type <- V(nursing_af)$name %in% n[,1]
+
+nursing.pr <- bipartite.projection(nursing_af)
+```
+
 
 ```{r}
 nursing_net <- network(n_nursing, matrix.type = "edgelist", directed = F)
@@ -112,8 +125,19 @@ cyber_credadj <- get.adjacency(cyber_creds, sparse = F, attr = "weight")
 ```
 
 ```{r}
+cyber_soc <- cyber.pr$proj1
+cyber_socadj <- get.adjacency(cyber_soc, sparse = F, attr = "weight")
+```
+
+
+```{r}
 cyber_net <- network(cyber_credadj, matrix.type = "adjacency", directed = F)
 ```
+
+```{r}
+gplot(cyber_net, use)
+```
+
 
 ```{r}
 icyber <- asIgraph(cyber_net)
@@ -136,7 +160,9 @@ saveWidget(nettest, "cyber_stw_interactivetest.html")
 ```
 
 
-```{r}
-gplot(cyber_net, usearrows = F, displaylabels = F)
+```{r, fig.height = 10}
+op <- par(mar = rep(1,4))
+gplot(cyber_net, usearrows = F, displaylabels = F, vertex.col = "lightblue", vertex.cex = 0.5, label.cex = 0.4, label.pos = 5, displayisolates = T)
+par(op)
 ```
 
