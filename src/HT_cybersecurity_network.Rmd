@@ -195,6 +195,39 @@ head(cyber)
 cyber <- cyber %>% select(ONETSOCTITLE, Certification, STW, Origin, Certifier, Level, InDemand)
 ```
 
+ [1] "Forensic Science Technicians"                                        "Network and Computer Systems Administrators"                        
+ [3] "Information Security Analysts"                                       "Computer Systems Analysts"                                          
+ [5] "Software Developer"                                                  "Software Quality Assurance Analysts and Testers"                    
+ [7] "Computer Programmers"                                                "Information Technology Project Managers"                            
+ [9] "Computer and Information Systems Managers"                           "Computer User Support Specialists"                                  
+[11] "Computer Network Support Specialists"                                "Electrical and Electronic Engineering Technologists and Technicians"
+[13] "Information Security Engineers"                                      "Intelligence Analyst"                                               
+[15] "Detectives and Criminal Investigators"                               "Police Identification and Records Officers"
+
+```{r}
+cybermat_attributes <- cybermat_attributes %>% mutate(socname = case_when(name == "Forensic Science Technicians" ~ "Forensic\nScience\nTechnicians",
+                                                                          name == "Network and Computer Systems Administrators" ~ "Network\nand Computer\nSystems\nAdministrators",
+                                                                          name == "Information Security Analysts" ~ "Information\nSecurity\nAnalysts",
+                                                                          name == "Computer Systems Analysts" ~ "Computer\nSystems\nAnalysts",
+                                                                          name == "Software Developer" ~ "Software\nDeveloper",
+                                                                          name == "Software Quality Assurance Analysts and Testers"~ "Software\nQuality\nAssurance\nAnalysts\nand Testers",
+                                                                          name == "Computer Programmers" ~ "Computer\nProgrammers",
+                                                                          name == "Information Technology Project Managers" ~ "Information\nTechnology\nProject\nManagers",
+                                                                          name == "Computer and Information Systems Managers" ~ "Computer\nand\nInformation\nSystems\nManagers",
+                                                                          name == "Computer User Support Specialists" ~ "Computer\nUser\nSupport\nSpecialists",
+                                                                          name == "Computer Network Support Specialists" ~ "Computer\nNetwork\nSupport\nSpecialists",
+                                                                          name == "Electrical and Electronic Engineering Technologists and Technicians" ~ "Electronic\nEngineering\nTechnicians",
+                                                                          name == "Information Security Engineers" ~ "Information\nSecurity\nEngineers",
+                                                                          name == "Intelligence Analyst" ~ "Intelligence\nAnalyst",
+                                                                          name == "Detectives and Criminal Investigators" ~ "Detectives\nand Criminal\nInvestigators",
+                                                                          name == "Police Identification and Records Officers" ~ "Police\nIdentification\nand Records\nOfficers"))
+```
+
+```{r}
+cybermat_attributes
+```
+
+
 ```{r}
 g_test <- graph.data.frame(cyber, directed = F, vertices = cybermat_attributes)
 ```
@@ -221,29 +254,8 @@ rolelab[!is.na(rolelab)]
 ```
 
 ```{r}
-"Forensic Science \nTechnicians"
+print("Forensic Science /nTechnicians")
 ```
-
-
-
-```{r, fig.height = 20, fig.width = 20}
-rolecat <- as.factor(V(g_test)$STW)
-
-plot(g_test,vertex.shape=ifelse(V(g_test)$type,"circle","square"),
-     vertex.color = ifelse(V(g_test)$type == F, ifelse(V(g_test)$STW == "STW", cbPalette[5], cbPalette[1]), cbPalette[3]),
-     edge.color = ifelse(E(g_test)$STW == "STW", cbPalette.blk[7], cbPalette.blk[1]),
-     vertex.label = ifelse(V(g_test)$type == F, V(g_test)$name, NA),
-     vertex.label.cex = 0.7,
-     vertex.label.dist = 0,
-     vertex.label.color = "black",
-     vertex.size = ifelse(V(g_test)$type, 2, 5),
-     directed = F)
-title(main = "Cybersecurity Credential and Occupation Network", sub = "data from O*Net OnLine")
-legend("bottomleft", legend = c("STW", "Non-STW"), col = c(cbPalette[5],cbPalette[1]), pch = 19, pt.cex = 1.5, bty = "n", title = "Type of Occupation", xjust = 0)
-legend("bottomleft", legend = c("Credential", "Occupation"), pch = c(19, 15), pt.cex = 1.5, bty = "n", title = "Node Type", inset = c(0, .05), xjust = 0)
-```
-
-
 
 ```{r}
 #Color Blind Palettes
@@ -265,4 +277,60 @@ wheel <- function(col, radius = 1, ...)
 wheel(cbPalette)
 wheel(cbPalette.blk)
 ```
+
+
+
+
+```{r, fig.height = 20, fig.width = 20}
+rolecat <- as.factor(V(g_test)$STW)
+
+plot(g_test,vertex.shape=ifelse(V(g_test)$type,"circle","square"),
+     vertex.color = ifelse(V(g_test)$type == F, ifelse(V(g_test)$STW == "STW", cbPalette[5], cbPalette[1]), cbPalette[3]),
+     edge.color = ifelse(E(g_test)$STW == "STW", cbPalette.blk[7], cbPalette.blk[1]),
+     vertex.label = ifelse(V(g_test)$type == F, V(g_test)$socname, NA),
+     vertex.label.cex = 0.7,
+     vertex.label.dist = 0,
+     vertex.label.color = "black",
+     vertex.size = ifelse(V(g_test)$type, 2, 5),
+     directed = F)
+title(main = "Cybersecurity Credential and Occupation Network", sub = "data from O*Net OnLine")
+legend("bottomleft", legend = c("STW", "Non-STW"), col = c(cbPalette[5],cbPalette[1]), pch = 19, pt.cex = 1.5, bty = "n", title = "Type of Occupation", xjust = 0)
+legend("bottomleft", legend = c("Credential", "Occupation"), pch = c(19, 15), pt.cex = 1.5, bty = "n", title = "Node Type", inset = c(0, .05), xjust = 0)
+```
+
+```{r}
+
+```
+
+
+```{r, fig.height = 20, fig.width= 20}
+plot(g_test,vertex.shape=ifelse(V(g_test)$type,"circle","square"),
+     vertex.color = ifelse(V(g_test)$type == F, ifelse(V(g_test)$STW == "STW", cbPalette[5], cbPalette[1]), cbPalette[3]),
+     edge.color = ifelse(E(g_test)$STW == "STW", cbPalette.blk[7], cbPalette[1]),
+     vertex.label = ifelse(V(g_test)$type == F, V(g_test)$socname, NA),
+     vertex.label.cex = 0.65,
+     vertex.label.dist = 0,
+     vertex.label.color = "black",
+     vertex.size = ifelse(V(g_test)$type, 1.5, 9.3),
+     directed = F)
+title(main = "Cybersecurity Credential and Occupation Network", sub = "data from O*Net OnLine")
+legend("bottomleft", legend = c("STW", "Non-STW"), col = c(cbPalette[5],cbPalette[1]), pch = 19, pt.cex = 1.5, bty = "n", title = "Type of Occupation", xjust = 0)
+legend("bottomleft", legend = c("Credential", "Occupation"), pch = c(19, 15), pt.cex = 1.5, bty = "n", title = "Node Type", inset = c(0, .05), xjust = 0)
+```
+
+
+
+```{r}
+#install.packages("ggraph")
+library(ggraph)
+```
+
+```{r, fig.height = 10, fig.width = 10}
+ggraph(g_test) +
+  geom_edge_link(color = "gray") +   
+  geom_node_point(color = "orange", size = 2)+
+  geom_node_text(aes(label = ifelse(V(g_test)$type == F, V(g_test)$name, NA), size=0.3, repel=T, parse = T)) +
+  theme_void()
+```
+
 
