@@ -88,6 +88,55 @@ length(unique(d$SOC_type))
 unique(d$SOC_type)
 ```
 
+o 11-Management Occupations
+
+o 13- Business and Financial Operations Occupations
+
+o 15-Computer and Mathematical Occupations
+
+o 17- Architecture and Engineering Occupations
+
+o 19- Life, Physical, and Social Science Occupations
+
+o 27-Art, Design, Entertainment, Sports, And Media Occupations
+
+o 29-Healthcare Practitioners and Technical Occupations
+
+o 35-Protective Service Occupations
+
+o 43-Office and Administrative Support Occupations
+
+o 45-Farming, Fishing, and Forestry Occupations
+
+o 47-Construction and Extraction Occupations
+
+o 49-Installation, Maintenance, and Repair Occupations
+
+o 51-Production Occupations
+
+o 53- Transportation and Material Moving Occupations
+
+```{r}
+d <- d %>% mutate(soc_type_name = case_when(SOC_type == "11" ~ "Management Occupations",
+                                            SOC_type == "13" ~ "Business and Financial Operations Occupations",
+                                            SOC_type == "15" ~ "Computer and Mathematical Occupations",
+                                            SOC_type == "17" ~ "Architecture and Engineering Occupation",
+                                            SOC_type == "19" ~ "Life, Physical, and Social Science Occupations",
+                                            SOC_type == "27" ~ "Art, Design, Entertainment, Sports, And Media Occupations",
+                                            SOC_type == "29" ~ "Healthcare Practitioners and Technical Occupation",
+                                            SOC_type == "35" ~ "Protective Service Occupations",
+                                            SOC_type == "43" ~ "Office and Administrative Support Occupations",
+                                            SOC_type == "45" ~ "Farming, Fishing, and Forestry Occupations",
+                                            SOC_type == "47" ~ "Construction and Extraction Occupations",
+                                            SOC_type == "49" ~ "Installation, Maintenance, and Repair Occupations",
+                                            SOC_type == "51" ~ "Production Occupations",
+                                            SOC_type == "53" ~ "Transportation and Material Moving Occupations"))
+```
+
+```{r}
+d
+```
+
 
 ^^ use this as the original df.  An attributes matrix now:
 
@@ -467,7 +516,8 @@ legend("bottomleft", legend = c("Positive Projected Growth", "Negative Projected
 ```{r temp plot for occ groups, fig.height = 20, fig.width=20}
 #Enter the number of the occupation group you'd like to see!
 #"11" "13" "15" "17" "19" "27" "29" "33" "35" "43" "47" "49" "51" "53"
-temp_net_lab <- "53"
+temp_net_lab <- "19"
+#don't do it for the ones that only have one, 11, 13, 15, 19, 33, 35, 43, 45
 
 #generate the network object for the selected graph
 
