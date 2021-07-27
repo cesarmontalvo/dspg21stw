@@ -202,6 +202,20 @@ cybermat_attributes <- cybermat_attributes %>% mutate(socname = case_when(name =
 ```
 
 ```{r}
+cyber2 <- cyber[!duplicated(cyber[1:2]),]
+```
+
+```{r}
+cyber[1:2]
+```
+
+
+```{r}
+cyber <- cyber[!duplicated(cyber[1:2]),]
+```
+
+
+```{r}
 cyber <- cyber %>% select(ONETSOCTITLE, Certification, STW, Origin, Certifier, Level, InDemand)
 ```
 
@@ -226,6 +240,8 @@ legend("bottomleft", legend = c("STW", "Non-STW"), col = c(cbPalette[5],cbPalett
 legend("bottomleft", legend = c("Credential", "Occupation"), pch = c(19, 15), pt.cex = 1.5, bty = "n", title = "Node Type", inset = c(0, .05), xjust = 0)
 ```
 
+
+
 ## Nursing Only
 
 
@@ -246,6 +262,10 @@ nurse_attr <- nurse_attr %>% mutate(socname = case_when(name == "Respiratory The
 
 ```{r}
 V(nurse_net)$name[V(nurse_net)$type == F]
+```
+
+```{r}
+nurse <- nurse[!duplicated(nurse[1:2]),]
 ```
 
 
@@ -306,13 +326,7 @@ I made the personal choice to call the manufacturing subset the codes that begin
 
 Below will include the following occupations:
 
-```{r}
-unique(d$SOCNAME[d$SOC_type == "17"]) 
-unique(d$SOCNAME[d$SOC_type == "19"])
-unique(d$SOCNAME[d$SOC_type == "27"])
-unique(d$SOCNAME[d$SOC_type == "49"])
-unique(d$SOCNAME[d$SOC_type == "51"])
-```
+
  
  ^^ narrow this down based on my beliefs of what is in the manufacturing industry, note that, and send to Vicki and Cesar for approval.
 
@@ -439,23 +453,6 @@ vcount(stw_network)
 ecount(stw_network)
 ```
 
-
-```{r, fig.height = 20, fig.width = 20}
-growth_color <- as.factor(E(stw_network)$GROWTH)
-plot(stw_network,
-     vertex.label = NA,
-     vertex.label.color = "black",
-     vertex.label.cex = 0.5,
-     vertex.shape = ifelse(V(stw_network)$type, "circle", "square"),
-     vertex.color = ifelse(V(stw_network)$type, cbPalette[8], cbPalette[5]),
-     vertex.size = ifelse(V(stw_network)$type, .75, 2),
-     edge.width = 2,
-     edge.color = ifelse(E(stw_network)$GROWTH == "NEG", cbPalette[7], cbPalette[4]),
-     layout = layout_as_bipartite)
-title(main = "STW Credential and Occupation Network", sub = "data from O*Net OnLine")
-legend("bottomleft", legend = c("Credential", "Occupation"), col = c(cbPalette[8], cbPalette[5]), pch = c(19,15), pt.cex = 1.5, bty = "n", title = "Node Type", xjust = 0)
-legend("bottomleft", legend = c("Positive Projected Growth", "Negative Projected Growth"), col = c(cbPalette[4], cbPalette[7]), pch = c(4,4), pt.cex = 1.5, bty = "n", title = "Edge Type", inset = c(0, .05), xjust = 0)
-```
 
 ```{r}
 head(d)
