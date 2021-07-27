@@ -158,9 +158,11 @@ cyber <- cyber %>% select(ONETSOCTITLE, Certification, STW, Origin, Certifier, L
 
 ```{r cybernet graph}
 g_test <- graph.data.frame(cyber, directed = F, vertices = cybermat_attributes)
+V(g_test)$type <- bipartite.mapping(g_test)$type
+g_test.pr <- bipartite.projection(g_test)
 ```
 
-```{r, fig.height = 20, fig.width= 20}
+```{r, fig.height = 20, fig.width = 20}
 plot(g_test,vertex.shape=ifelse(V(g_test)$type,"circle","square"),
      vertex.color = ifelse(V(g_test)$type == F, ifelse(V(g_test)$STW == "STW", cbPalette[5], cbPalette[1]), cbPalette[3]),
      edge.color = ifelse(E(g_test)$STW == "STW", cbPalette.blk[7], cbPalette[1]),
@@ -243,7 +245,11 @@ title(main = "Nursing Credential and Occupation Network", sub = "data from O*Net
 legend("bottomleft", legend = c("Credential", "Occupation"), col = c(cbPalette[4], cbPalette[5]), pch = c(19,15), pt.cex = 1.5, bty = "n", title = "Node Type", xjust = 0)
 ```
 
+```{r}
+nurse[nurse$SOCNAME == "Surgical Technologists" & nurse$Certification.Name == "Certified Surgical Assistant",]
+```
 
+The reason there are multiple edges between Certified Surgical Assistant and 
 
 ## Manufacturing
 
@@ -402,25 +408,23 @@ legend("bottomleft", legend = c("Credential", "Occupation"), col = c(cbPalette[8
 legend("bottomleft", legend = c("Positive Projected Growth", "Negative Projected Growth"), col = c(cbPalette[4], cbPalette[7]), pch = c(4,4), pt.cex = 1.5, bty = "n", title = "Edge Type", inset = c(0, .05), xjust = 0)
 ```
 
-```{r, fig.height = 20, fig.width = 20}
-growth_color <- as.factor(E(stw_network)$GROWTH)
-plot(stw_network,
-     vertex.label = NA,
-     vertex.label.color = "black",
-     vertex.label.cex = 0.5,
-     vertex.shape = ifelse(V(stw_network)$type, "circle", "square"),
-     vertex.color = ifelse(V(stw_network)$type, cbPalette[8], cbPalette[5]),
-     vertex.size = ifelse(V(stw_network)$type, .75, 2),
-     edge.width = 2,
-     edge.color = ifelse(E(stw_network)$GROWTH == "NEG", cbPalette[7], cbPalette[4]),
-     layout = layout_on_sphere)
-title(main = "STW Credential and Occupation Network", sub = "data from O*Net OnLine")
-legend("bottomleft", legend = c("Credential", "Occupation"), col = c(cbPalette[8], cbPalette[5]), pch = c(19,15), pt.cex = 1.5, bty = "n", title = "Node Type", xjust = 0)
-legend("bottomleft", legend = c("Positive Projected Growth", "Negative Projected Growth"), col = c(cbPalette[4], cbPalette[7]), pch = c(4,4), pt.cex = 1.5, bty = "n", title = "Edge Type", inset = c(0, .05), xjust = 0)
+```{r}
+head(d)
 ```
 
+```{r}
+E(stw_network)$PER_CHG <- as.factor(E(stw_network)$PER_CHG)
+```
+
+
+```{r}
+E(stw_network)$color <- colour_values(E(stw_network)$PER_CHG, palette = "rdylgn")
+```
+
+
 ```{r, fig.height = 20, fig.width = 20}
-growth_color <- as.factor(E(stw_network)$GROWTH)
+#c_scale <- colorRamp(c('orange','yellow','gray', 'lightblue', 'blue'))
+#E(stw_network)$color = apply(c_scale(E(stw_network)$PER_CHG), 1, function(x) rgb(x[1]/255,x[2]/255,x[3]/255) )
 plot(stw_network,
      vertex.label = NA,
      vertex.label.color = "black",
@@ -429,7 +433,7 @@ plot(stw_network,
      vertex.color = ifelse(V(stw_network)$type, cbPalette[8], cbPalette[5]),
      vertex.size = ifelse(V(stw_network)$type, .75, 2),
      edge.width = 2,
-     edge.color = ifelse(E(stw_network)$GROWTH == "NEG", cbPalette[7], cbPalette[4]),
+     edge.color = E(stw_network)$color,
      layout = layout_with_graphopt)
 title(main = "STW Credential and Occupation Network", sub = "data from O*Net OnLine")
 legend("bottomleft", legend = c("Credential", "Occupation"), col = c(cbPalette[8], cbPalette[5]), pch = c(19,15), pt.cex = 1.5, bty = "n", title = "Node Type", xjust = 0)
@@ -437,3 +441,59 @@ legend("bottomleft", legend = c("Positive Projected Growth", "Negative Projected
 ```
 
 
+```{r}
+my_palette <- viridis_pal()
+```
+
+```{r, fig.height = 20, fig.width = 20}
+E(stw_network)$color <- colour_values(E(stw_network)$PER_CHG, palette = "viridis")
+plot(stw_network,
+     vertex.label = NA,
+     vertex.label.color = "black",
+     vertex.label.cex = 0.5,
+     vertex.shape = ifelse(V(stw_network)$type, "circle", "square"),
+     vertex.color = ifelse(V(stw_network)$type, cbPalette[8], cbPalette[5]),
+     vertex.size = ifelse(V(stw_network)$type, .75, 2),
+     edge.width = 2,
+     edge.color = E(stw_network)$color,
+     layout = layout_with_graphopt)
+title(main = "STW Credential and Occupation Network", sub = "data from O*Net OnLine")
+legend("bottomleft", legend = c("Credential", "Occupation"), col = c(cbPalette[8], cbPalette[5]), pch = c(19,15), pt.cex = 1.5, bty = "n", title = "Node Type", xjust = 0)
+legend("bottomleft", legend = c("Positive Projected Growth", "Negative Projected Growth"), col = c(cbPalette[4], cbPalette[7]), pch = c(4,4), pt.cex = 1.5, bty = "n", title = "Edge Type", inset = c(0, .05), xjust = 0)
+```
+
+## subsetting to each broad occupation group
+
+```{r temp plot for occ groups, fig.height = 20, fig.width=20}
+#Enter the number of the occupation group you'd like to see!
+#"11" "13" "15" "17" "19" "27" "29" "33" "35" "43" "47" "49" "51" "53"
+temp_net_lab <- "53"
+
+#generate the network object for the selected graph
+
+d_temp <- d[d$SOC_type == temp_net_lab,]
+d_attr_temp <- d_attributes[d_attributes$SOC_type == temp_net_lab,]
+
+temp_net <- graph.data.frame(d_temp, directed = F, vertices = d_attr_temp)
+#43, 47, 49, 51, 53 have some vertex names in edgelist that are not in the vertex dataframe
+V(temp_net)$type <- bipartite.mapping(temp_net)$type
+temp_net.pr <- bipartite.projection(temp_net)
+
+plot(temp_net,
+     vertex.size = ifelse(V(temp_net)$type, 2, 4),
+     vertex.shape = ifelse(V(temp_net)$type, "circle", "square"),
+     vertex.color = ifelse(V(temp_net)$type, cbPalette[6], cbPalette[5]),
+     #vertex.color = cbPalette[V(manu_net)$SOC_type],
+     vertex.label = ifelse(V(temp_net)$type == F, V(temp_net)$name, NA),
+     vertex.label.color = "black",
+     vertex.label.cex = 0.70,
+     edge.width = 2,
+     edge.color = "gray")
+title(temp_net_lab, sub = "data from O*Net OnLine")
+legend("bottomleft", legend = c("Credential", "Occupation"), col = c(cbPalette[6], cbPalette[5]), pch = c(19,15), pt.cex = 1.5, bty = "n", title = "Node Type", xjust = 0)
+```
+
+
+
+ideas: make each of these independently, so that if I pick a color for each subgroup, we could maintain those colors in the bigger graph, or draw lines around them too I suppose.
+if I make them independently, it will only be a matter of naming them or lumping them together.  Then we could just direct the shiny app to be to the code for that one.
