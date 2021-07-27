@@ -34,9 +34,13 @@ ui <- fluidPage(
                       p("During the 10-week DSPG program, the STW team documented data sources to create a normalized dataset for STW jobs.  We used text matching to compare this data with job ads data and analyzed credential portability through network analysis."),
                       
                       h5("Our Team"),
-                      p("SDAD: Vicki Lancaster & Cesar Montalvo"),
+
+
+                      p("SDAD: Vicki Lancaster and Cesar Montalvo"),
                       p("DSPG: Emily Kurtz (Fellow), Haleigh Tomlin (Intern), Madeline Garrett (Intern)"),
-                      p("Sponsor: Gigi Jones, National Center for Science and Engineering (NCSES)")
+                      p("Sponsor: Gigi Jones, National Science Foundation (NSF), National Center for Science and Engineering (NCSES)")
+
+
                       ),
 
              #ui
@@ -113,7 +117,7 @@ ui <- fluidPage(
              #end profiling tab------------------------------------------
 
 
-             navbarMenu("Data Sources and Methods",
+             #navbarMenu("Data Sources",
                         tabPanel(
                           "Data Sources",
                           h3("Data Sources", align = "center", style = "margin-bottom: 50px"),
@@ -146,19 +150,20 @@ ui <- fluidPage(
                                  style = "margin-top: 30px;",
                                  style = "margin-right: 120px;",
 
-                                   fluidRow(
-                                     column(3, h4("Cleaning")),
-                                     column(6, wellPanel(p(style = "font-size:15px","In order to match company names across all three dataset we had to make all the strings similar to each other to facilitate fuzzy matching. To accomplish this we used regular expressions, the string package and pandas' package. The first step in the process was to lowercase all the strings. Then, remove punctuations except for underscores, dashes, ampersands, percent and dollar symbols. Afterwards, we removed any parenthesis along with the content within the parentheses. We then removed single characters from the beginning and removed numbers, as numbers complicate the matching process. Additionally, we removed extra spaces between words, the prefix b, and any legal entities from the company name. This provided all three data sets to have similar words in the entries that would make matching companies that may have ")))
+                                   
+                                   fluidRow(style = "margin-top:100px",
+                                            column(3, h4("Web Scraping")),
+                                            column(6, wellPanel(p(style = "font-size:15px","To collect the credential and SOC data from O*NET, we used R’s rvest web scraping package. We looped through the list of 133 Skilled Technical Workforce SOC codes and found all associated credentials for each. O*NET also reports the certifying organization and the type of credential, so we collected that information as well. In the end, we created a data frame with 1137 rows and 4 columns.  ")))
                                    ),
                                    hr(),
                                    fluidRow(style = "margin-top:100px",
-                                            column(3, h4("Web Scraping")),
-                                            column(6, wellPanel(p(style = "font-size:15px","To collect the credential and SOC data from ONET, we used R’s rvest web scraping package. We looped through the list of 133 Skilled Technical Workforce SOC codes and found all associated credentials for each. ONET also reports the certifying organization and the type of credential, so we collected that information as well. In the end, we created a data frame with 1137 rows and 4 columns.  ")))
+                                     column(3, h4("Cleaning")),
+                                     column(6, wellPanel(p(style = "font-size:15px","To match credentials across the O*NET, BGT, and VA Community Colleges data sources, we had to perform some preliminary data cleaning. We used regular expressions to remove acronyms within parentheses in the BGT dataset and states in the Community Colleges dataset. We also removed stop words and stemmed the words in the datasets, removing common, superfluous suffixes. Once the credentials were cleaned within all three datasets, we were ready to perform our text matching.")))
                                    ),
                                    hr(),
                                    fluidRow(style = "margin-top:100px",
                                             column(3, h4("Text Matching")),
-                                            column(6, wellPanel(p(style = "font-size:15px","Filling crucial jobs in the Skilled Technical Workforce requires coordination between governments, industries, and educational institutions. Unfortunately, there are inconsistencies in the language these three bodies use to describe the credentials required for these jobs. We used text matching methods to address some of these inconsistencies.  ")))
+                                            column(6, wellPanel(p(style = "font-size:15px","Filling crucial jobs in the Skilled Technical Workforce requires coordination between governments, industries, and educational institutions. Unfortunately, there are inconsistencies in the language these three bodies use to describe the credentials required for these jobs. We used text matching methods to address some of these inconsistencies. To do this, we used the stringdist and lingmatch R packages. Specifically, we used the stringdist function within the stringdist package to calculate the Damerau-Levenshtein distance between each pair of credentials across our three datasets. The lingmatch package allowed us to easily create matrices where words were represented by columns and credentials were represented by rows. This aided the distance calculations across each pair of data sources.  ")))
                                    ),
                                    hr(),
                                    fluidRow(style = "margin-top:100px",
@@ -169,7 +174,7 @@ ui <- fluidPage(
 
 
 
-                        )),#end navbar
+                        ),#),#end navbar
 
              #end Data Sources and Methods tabs-----------------
 
