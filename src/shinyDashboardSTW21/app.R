@@ -169,13 +169,19 @@ ui <- fluidPage(
                                    ),
                                    hr(),
                                    fluidRow(style = "margin-top:100px",
-                                            column(3, h4("Fuzzy Matching")),
-                                            column(6, wellPanel(p(style = "font-size:15px","To complete the fuzzy matching, we used a package by SeatGeeks called FuzzyWuzzy. FuzzyWuzzy uses the Levenshtein distance to calculate the minimum number of single character edits (insertions, deletions or substitutions) needed to change one word to another. The package contains several functions that produces a similarity ratio out of 100. The fuzz.ratio function calculates the ratio by using the basic Levenshtein distance and the equation from diff.libratio: 2*M / T, where T is the total number of characters in both strings and M is the number of matches. The fuzz.partial_ratio compares the shortest string (n) against all the n-length substrings of the larger string and returns the highest fuzz partial ratio. Therefore, if the shortest string is found within the larger string then the partial ratio will return a ratio of 100. For our purposes, we focused on a fuzz.ratio that would only produce 100 or perfect matches.  ")))
+                                            column(3, h4("Web Scraping")),
+                                            column(6, wellPanel(p(style = "font-size:15px","To collect the credential and SOC data from ONET, we used R’s rvest web scraping package. We looped through the list of 133 Skilled Technical Workforce SOC codes and found all associated credentials for each. ONET also reports the certifying organization and the type of credential, so we collected that information as well. In the end, we created a data frame with 1137 rows and 4 columns.  ")))
+                                   ),
+                                   hr(),
+                                   fluidRow(style = "margin-top:100px",
+                                            column(3, h4("Text Matching")),
+                                            column(6, wellPanel(p(style = "font-size:15px","Filling crucial jobs in the Skilled Technical Workforce requires coordination between governments, industries, and educational institutions. Unfortunately, there are inconsistencies in the language these three bodies use to describe the credentials required for these jobs. We used text matching methods to address some of these inconsistencies.  ")))
                                    ),
                                    hr(),
                                    fluidRow(style = "margin-top:100px",
                                             column(3, h4("Network Analysis")),
-                                            column(7, h4("")))
+                                            column(6, wellPanel(p(style = "font-size:15px","We used the R package igraph in order to visualize the links between occupations and credentials within the Skilled Technical Workforce. By visualizing these links and combining supplemental information, such as the projected growth of specific occupations in the STW, we are able to analyze the paths workers can take in the STW.  ")))
+                                   )
 
 
 
@@ -186,12 +192,6 @@ ui <- fluidPage(
 
 
              navbarMenu("Results",
-                        tabPanel("Within Data Matching",
-                                 selectInput("within", "Select", choice = c("NDCxNDC", "FDAxFDA", "DNAxDNA")),
-                                 dataTableOutput("withinData")
-                        ),
-
-
                         tabPanel("Across Data Matching",
                                  selectInput("across", "Select", choices = c("FDAxNDC", "FDAxDNA", "DNAxNDC")),
                                  dataTableOutput("AcrossData")
