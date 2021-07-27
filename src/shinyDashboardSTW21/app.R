@@ -5,25 +5,14 @@ library(data.table)
 library(rsconnect)
 
 
-#to do 7/28
-  #remove and rename column names in results tab
-  #get all the charts needed for this app
-  #Try to add a chart and images to app
-  #Begin filling out methods portion
-  #Work on about section, detailing the project and the problem we are trying to solve
-
-
-
-
-
 ui <- fluidPage(
   theme ="themes.css",
 
-  navbarPage(title = span("Business Innovation", style = "color:#232D4B"),
+  navbarPage(title = span("Skilled Technical Workforce", style = "color:#232D4B"),
              tabPanel("About",style = "margin:45px",
                       fluidRow(
-                        column(3, tags$img(height = "80%", width = "80%", src = "biilogo.png")),
-                        column(6, h1("Business Innovation")),
+                        #column(3, tags$img(height = "80%", width = "80%", src = "biilogo.png")),
+                        column(6, h1("Skilled Technical Workforce (STW)")),
                         column(3, tags$img(height = "80%", width = "80%", src = "partnerlogos.png", align = "right"))
                       ),
 
@@ -39,16 +28,14 @@ ui <- fluidPage(
                         to work together on projects that address state, federal, and local government challenges around critical social issues relevant in the world today.
                         DSPG young scholars conduct research at the intersection of statistics, computation, and the social sciences to determine how information
                         generated within every community can be leveraged to improve quality of life and inform public policy. ", style = "color:#232D4B"),
-                      h5("DSPG20BI Summer Project"),
-                      p("The DSPG20BI team is one of x number of teams within the larger DSPG program tasked with looking into detecting product innovation within non-traditional data sources.
-                        Our goal is to find instances of product innovation within the pharmaceutical industry thorugh niche natural-language processessing techniques in an attempt
-                        to supplement the current measure of innovation", tags$a(href = "https://www.nsf.gov/statistics/srvyindustry/about/brdis/", "the Business R&D and Innovation Survey (BRDIS)"),"conducted by The National Science Foundation."),
+                      h5("DSPG21STW Summer Project"),
+                      p("Employment in the Skilled Technical Workforce (STW) requires a high level of knowledge in a technical domain and does not require a bachelor’s degree for entry.  These jobs are important because they provide a path to the middle class, and they foster US innovation and shared prosperity through having a workforce with a diverse technical skillset.  By 2022, the US will have 2.4 million unfilled STW jobs.  This summer, our goal was to create a list of nondegree credentials for jobs in the STW."),
 
-                      p("During the 10-week DSPG program, the Business Innovation team focused on developing functions that used NLP techniques to match strings across datasets.
-                        These functions were written particularly focused on datasets mentioning innovation amongst pharmaceutical companies. However, the functions can be applied to any dataset containing strings.
-                        The goal of this task it to provide future insights on the companies doing innovation as it pertains to the OLSO manual definition"),
-
+                      p("During the 10-week DSPG program, the STW team documented data sources to create a normalized dataset for STW jobs.  We used text matching to compare this data with job ads data and analyzed credential portability through network analysis."),
+                      
                       h5("Our Team"),
+
+
                       p("SDAD: Vicki Lancaster and Cesar Montalvo"),
                       p("DSPG: Emily Kurtz (Fellow), Haleigh Tomlin (Intern), Madeline Garrett (Intern)"),
                       p("Sponsor: Gigi Jones, National Science Foundation (NSF), National Center for Science and Engineering (NCSES)")
@@ -200,13 +187,21 @@ ui <- fluidPage(
 
 
                         ),
-                        tabPanel("Network Analysis")
-
-                        )#end results tab
-
-
-      ) #end navbarPage
-  )#end fluid page
+                        
+                        tabPanel("Networks", style = "margin:20px",
+                                 h5("Network Visualizations"),
+                                 br(),
+                                 br(),
+                                 br(),
+                                 sidebarLayout(
+                                   sidebarPanel(
+                                     h4("Occupation"),
+                                     selectInput("network", "Occupation", choices = c("Nursing", "Cybersecurity", "Manufacturing")),
+                                     selectInput("increasing", "Projected % Chance in Occupation", choices = c("Don't Show", "Show"))),
+                                   mainPanel(
+                                     imageOutput("netgraph")))) #end results tab 
+) #end navbarPage
+  )) #end fluid page
 
 
 
@@ -342,6 +337,21 @@ server <- function(input, output) {
     }
   })
 
+  output$netgraph <- renderImage({
+    
+    # When input$network is nursing, filename is ./www/nursing.png
+    filename <- normalizePath(file.path('www',
+                                        paste(input$network, '.png', sep='')))
+    
+    # Return a list containing the filename and alt text
+    list(src = filename,
+         alt = paste(input$network, "Network"),
+         width = 900,
+         height = 900)
+    
+    
+    
+  }, deleteFile = FALSE)
 }
 
 # Run the application
