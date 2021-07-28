@@ -175,7 +175,17 @@ ui <- fluidPage(
                                      selectInput("network", "Occupation", choices = c("Nursing", "Cybersecurity", "Manufacturing")),
                                      selectInput("increasing", "Projected % Chance in Occupation", choices = c("Don't Show", "Show"))),
                                    mainPanel(
-                                     imageOutput("netgraph")))) #end results tab 
+                                     imageOutput("netgraph")))),
+                        
+                        tabPanel("Boxplots",style="margin:20px",
+                                 h5("Boxplots", align = "center"),
+                                 p(style = "margin-top:25px","To visualize the relationships between the named credentials within the three main datasets, we created boxplots. One natural question to ask is whether there are more precise matches in how credentials are referenced within certain types of jobs. Within the Skilled Technical Workforce, there are 14 occupational groups. These are: 1) 11. Agriculture, Forestry, Fishing, and Hunting, 2) 13. 3) 17. 4) 19. 5) 27. 6) 29. 7) 33. 8) 35. 9) 43. 10) 45. 11) 47. 12) 49. 13) 51. Information, and 14) 53. Real Estate and Rental and Leasing. The boxplot below shows the confidences for our text matching algorithm between Burning Glass credentials and O*NET credentials for each of these occupational groups. While some groups' confidences are somewhat higher than others, all results are somewhat low. This highlights the gaps between industries, governments, and educational institutions, and shows these gaps manifest even in the language used to discuss occupations and credentials. " ),
+                                 #br(),
+                                 #p("Originally, the dataset contained 1,942,855 data entries. Given a restriction on memory and running power, we decided to only have unique and complete entries as it diminished the dataset by 96.2% to 73, 688 entries, while still fulfilling our main goal of understanding what companies are producing innovation. The visualization [above/below] demonstrates the total percentage of data entries that passed our validity checks.  About 78.3% of the total unique entries passed the validity check, 100% of the entries were published after 2010, and 91.7% of the entries contained valid company codes.  "),
+                                 imageOutput("bgtonetbox")
+                                 
+                                 
+                                 )#end results tab 
              ), #end navbarPage
              #navbarMenu("Data Sources",
              tabPanel("Data Sources",
@@ -245,16 +255,7 @@ server <- function(input, output) {
     }
     
   })
-  
-  #output$fda <- renderDataTable({
-  #x <- read.csv("fdaxfda.csv")
-  #x
-  #})
-  
-  #output$ndc <- renderDataTable({
-  #ndc <- read.csv("ndcxndc.csv")
-  #ndc
-  #})
+
   
   output$withinData <- renderDataTable({
     if(input$within == "FDAxFDA"){
@@ -352,6 +353,25 @@ server <- function(input, output) {
     
     
   }, deleteFile = FALSE)
+  
+  
+  output$bgtonetbox <- renderImage({
+    
+    # When input$network is nursing, filename is ./www/nursing.png
+    filename <- normalizePath(file.path('www',
+                                        'BGT_ONET_Box.png', sep=''))
+    
+    # Return a list containing the filename and alt text
+    list(src = filename,
+         alt = paste(input$bgtonetbox, "Boxplots"),
+         width = 900,
+         height = 600)
+    
+    
+    
+  }, deleteFile = FALSE)
+  
+  
 }
 
 # Run the application
