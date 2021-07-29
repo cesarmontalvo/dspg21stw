@@ -157,7 +157,7 @@ ui <- fluidPage(
              
              navbarMenu("Results",
                         tabPanel("Across Data Matching",
-                                 selectInput("across", "Select", choices = c("FDAxNDC", "FDAxDNA", "DNAxNDC")),
+                                 selectInput("across", "Select", choices = c("ONETxBGT", "ONETxVA", "VAxBGT")),
                                  dataTableOutput("AcrossData")
                                  
                                  
@@ -290,8 +290,8 @@ server <- function(input, output) {
   })
   
   output$AcrossData <- renderDataTable({
-    if(input$across == "FDAxNDC"){
-      acrossTable <- read.csv("fdaxndc.csv")
+    if(input$across == "ONETxBGT"){
+      acrossTable <- read.csv("onetxbg.csv")
       
       acrossTable$X <- NULL
       acrossTable$fda.row <- NULL
