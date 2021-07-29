@@ -202,7 +202,7 @@ ui <- fluidPage(
                       )
                       
              )
-  )) #end fluid page
+  ) #end fluid page
 
 
 
