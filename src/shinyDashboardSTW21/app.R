@@ -3,6 +3,11 @@ library(dplyr)
 library(ggplot2)
 library(data.table)
 library(rsconnect)
+library(shiny)
+library(forcats)
+library(plotly)
+
+merged_cert_fam <- read.csv("merged_cert_fam.csv" ) 
 
 
 ui <- fluidPage(
@@ -46,26 +51,42 @@ ui <- fluidPage(
              #ui
              navbarMenu("Profiling",
                         
-                        tabPanel("Publishers", style = "margin:20px",
+                        tabPanel("Certifications and Occupations", style = "margin:20px",
                                  h5("Visuals"),
+                                 p(style = "margin-top:25px","In this graph we show the top burning glass certifications for each SOC Occupation Family. We removed drivers license as a credential. Blah blah blah, will have to fill this in." ),
                                  br(),
                                  br(),
                                  br(),
                                  sidebarLayout(
                                    sidebarPanel(
-                                     h4("Top Publishers"),
-                                     selectInput("year", "Year", choices = c(2013, 2014,2015,2016,2017,2018))),
+                                     h4("Top Certifications for each Occupation Family"),
+                                     selectInput("family", "Occupation Family", choices = list(
+                                       'Management' = '11' ,
+                                       'Business and Financial Operations' = '13' ,
+                                       'Architecture and Engineering' = '17' ,
+                                       'Life, Physical, and Social Science' = "19" ,
+                                       'Arts, Design, Entertainment, Sports, and Media' = "27" ,
+                                       'Healthcare Practitioners and Technical' = "29" ,
+                                       'Protective Service' = "33" ,
+                                       'Food Preparation and Serving Related' = "35" ,
+                                       'Office and Administrative Support' = "43" ,
+                                       'Farming, Fishing, and Forestry' = "45" ,
+                                       'Construction and Extraction' = "47" ,
+                                       'Installation, Maintenance, and Repair' = "49" ,
+                                       'Production' = "51" ,
+                                       'Transportation and Material Moving' = "53"
+                                     ))),
                                    mainPanel(
-                                     imageOutput("pub"))
+                                     plotlyOutput('plot_20top_certificates' , width = "auto" ,  height = "700"))
                                  )
                                  
                         ),
                         
                         tabPanel("Profiles", style = "margin:60px",
                                  h5("Profiling", align = "center"),
-                                 p(style = "margin-top:25px","Profiling is essential for ensuring the contents of datasets align with the projects overall goal and resources. The first goal of the Business Innovation project is to obtain a general understanding of what companies are the ones producing recent innovation. Therefore, we profiled the DNA data to include only unique, complete and valid entries.  We defined a valid entry, as an article that was published after 2010, had more than 100 but less than 10,000 characters and had a company code that was in the company codes dictionary. The year restriction will allow us to only consider recent innovations, the character restriction will allow our computing resources to fully analyze the text and the company code restriction will ensure that we have the full name of the company which will provide better insights on the companies completing innovation. " ),
+                                 p(style = "margin-top:25px","Our first task was to profile the Burning Glass Technologies data in order to get a better understanding of the data we would be working with. We looked primarily at metrics like data completeness, uniqueness, and interesting metrics for columns SOC code and Certification. Completeness is simply a percentage of how complete the data was. Uniqueness can be defined as the number of distinct entries for each of the variables.In this Data Discovery we are looking at 3 data sets, BGT_Main, BGT_CERT, and STW.BGT_MAIN is a data set of 33,859,698 rows, we pulled specifically for the variables" ),
                                  br(),
-                                 p("Originally, the dataset contained 1,942,855 data entries. Given a restriction on memory and running power, we decided to only have unique and complete entries as it diminished the dataset by 96.2% to 73, 688 entries, while still fulfilling our main goal of understanding what companies are producing innovation. The visualization [above/below] demonstrates the total percentage of data entries that passed our validity checks.  About 78.3% of the total unique entries passed the validity check, 100% of the entries were published after 2010, and 91.7% of the entries contained valid company codes.  "),
+                                 p("Before we evaluate completeness and uniqueness of variables, we had to do some manipulation to the data set. In order to successfully filter for STW jobs down the line we needed to remove job-ads from BGT_MAIN that did not have a soc code. This decreased the size of the original data set from 33,859,698 to 32,488,447, removing 1,371,251 rows. Next, we had to remove “-” from SOC variable and make SOC codes integers in both the BGT_MAIN and STW data sets. We were then able to merge the data by matching on the SOC variable, so that the data only contained job-ads that were in the STW. This decreased our data set down to 2,234,115 rows. This shows that 6.9% of the bgt job ads with soc codes are in the STW. Next, we needed add in certification data. We merged BGT_MAIN and BGT_CERT on the jobid variable. This decreased our data set to 1,173,772, indicating that out of the job ads within STW 52.5% have credentials listed."),
                                  sidebarLayout(
                                    sidebarPanel(
                                      width = 6,
@@ -73,41 +94,13 @@ ui <- fluidPage(
                                      h4("Definitions: ", style = "margin-top:50px"),
                                      helpText("Note: All definitions are provided by Dow Jones Developer Platform"),
                                      tags$ul(
-                                       tags$li("an - Accession Number (Unique id)"),
-                                       tags$li("art: Caption text and other descriptions of images and illustrations"),
-                                       tags$li("action: Action perfomed on a document (ex. add, rep, del)"),
-                                       tags$li("body: The content of the article"),
-                                       tags$li("byline: The author of an article"),
-                                       tags$li("copyright: Copyright text"),
-                                       tags$li("credit: Attribution text"),
-                                       tags$li("currency_codes: Currencies"),
-                                       tags$li("dateline: Place of origin and date"),
-                                       tags$li("document_type: Document type (ex. article, multimedia, summary"),
-                                       tags$li("ingestion_datetime: Data and time the artile was added to the Dow Jones Developer Platfrom"),
-                                       tags$li("language_code: Code for teh published language (ex. en)"),
-                                       tags$li("modification_datetime: Data and time that the article was modified"),
-                                       tags$li("modification_date: Date in which the article was last modified"),
-                                       tags$li("publication_date: Date in which the article was published"),
-                                       tags$li("publication_datetime: Date and time in which the article was published"),
-                                       tags$li("publisher_name: Publisher name"),
-                                       tags$li("region_of_origin: Publisher's region of origin"),
-                                       tags$li("snippet: What you see of an article outiside the paywall"),
-                                       tags$li("source_code: Publisher code"),
-                                       tags$li("source_name: Name of the source"),
-                                       tags$li("title: Title text"),
-                                       tags$li("word_count: Document word count"),
-                                       tags$li("subject_codes: News subjects"),
-                                       tags$li("region_codes: Region codes (ex. usa, namz, etc"),
-                                       tags$li("industry_codes: Industry codes"),
-                                       tags$li("person_codes: Persons"),
-                                       tags$li("market_index_codes: Market indices"),
-                                       tags$li("company_codes: Factiva IDs for companies and organizations"),
-                                       tags$li("company_codes_about: Companies that have high relevance to the document"),
-                                       tags$li("company_codes_association: Companies added to the document because of a relationship other than parent/child"),
-                                       tags$li("company_codes_lineage: Companies added to the document because of a parent/child relationship to another company"),
-                                       tags$li("company_codes_occur: Companies mentioned in the document but that do not necessarily have a high relevance to it"),
-                                       tags$li("company_codes_relevance: Companies added to the document because they have a certain degree of relevance to it")
-                                       
+                                       tags$li("soc code: SOC code of the job assigned using BGT occupation coding rules. SOC codes are always the first 6- digits of a job’s O*NET code. We use SOCs based off of the most recent 2010 SOC delineations."),
+                                       tags$li("Latitude: Latitude for the Canonicalized Location."),
+                                       tags$li("Longitude: Longitude for the Canonicalized Location."),
+                                       tags$li("Fipsstate: FIPS is a 5-digit code, representing the concatenation of the state + county FIPS codes. Ex. 29019 is the FIPS code for Boone County, MO, where the first 2-digits, 29, represent MO, and the last 3-digits, 019, represent Boone County in MO."),
+                                       tags$li("Jobid: A unique ID generated by Burning Glass. BGTJobId is used to link this table with both the main table, and subsequent tables. "),
+                                       tags$li("Certification: Certification is a standardized version of the certifications listed in the posting to enable improved search and categorization.Note that there may be multiple certifications per job posting (or, alternatively, none at all). As such, the data in this table is presented vertically, where each certification for a particular job posting will be in its own row, with the job posting’s BGTJobId in its own column to the left of each certification, identifying which job posting each certification came from. "),
+                                       tags$li("Name: Name of the occupation associated with a given SOC Code ")
                                      )
                                      
                                    ),
@@ -185,18 +178,16 @@ ui <- fluidPage(
                       style = "margin-right: 120px;",
                       fluidRow(
                         column(3, tags$img(height = "100%", width = "100%",src = "dnalogo.png")),
-                        column(6, wellPanel(p(style = "font-size:15px","The Dow Jones DNA platform collects information from Dow Jones publication with premium and licensed third party sources. This proprietary data platform contains 1.3bn articles each labeled with unique DNA taxonomies tags including word count, source name, and company code. More information on all the included data tags can be found on the DNA website. This dataset served as the primary resource for alternative text sources and will inspire the machine learning algorithms that will predict innovation. "))),
+                        column(6, wellPanel(p(style = "font-size:15px","The Burning Glass Technologies delivers job market analytics that empower employers, workers and educators to make data-driven decisions. The company’s artificial intelligence technology analyzes hundreds of millions of job postings and real-life career transitions to provide insight into workforce demand patterns. This real-time strategic intelligence offers crucial insights, such as which jobs are most in demand, the specific skills employers need and the career directions that offer the highest potential for workers. For more information, visit burning-glass.com. "))),
                       ),
                       hr(),
                       fluidRow(style = "margin-top:100px",
                                column(3, tags$img(height = "100%", width = "100%", src = "fdalogo.png")),
                                column(7, wellPanel(
-                                 tags$b("Approvals"),
-                                 p(style = "font-size:15px", "FDA drug approvals dataset generated and reviewed by FDA and includes information regarding. ",
                                    br(),
                                    br(),
-                                   tags$b("National Drug Code"),
-                                   p(style = "font-size:15px", "The National Drug Code (NDC) Directory is a publicly available source provided by the FDA that contains a list of all current drugs manufactured, prepared, propagated, compounded, or processed for commercial distribution. The data content is manually inputted by the companies producing the drugs as required per the Drug Listing Act of 1972. The FDA assigns the NDC – a unique three-digit number, to the drug products. The administration then updates the NDC directory daily with the NDC along with the rest of the information provided. We gathered content from this dataset on [enter date here]. This data was used to cross-validate the companies that we had previously identified as producing an innovation. ")
+                                   tags$b("ONET"),
+                                   p(style = "font-size:15px", "ONET Data was webscraped from the Occupational Information Network. O*NET Data descriptors are categories of occupational information collected and available for O*NET-SOC occupations. Each descriptor contains more specific elements with data ratings.")
                                  )))
                       )
                       
@@ -209,25 +200,34 @@ ui <- fluidPage(
 
 server <- function(input, output) {
   
-  output$pub <- renderImage({
+  output$plot_20top_certificates <- renderPlotly({
     
     # When input$n is 3, filename is ./images/image3.jpeg
-    filename <- normalizePath(file.path('www',
-                                        paste(input$year, 'Publisherplot.png', sep='')))
+    dat <- merged_cert_fam %>% filter(fam==input$family, 
+                                      certification != "Driver's License",
+                                      certification != "CDL Class A",
+                                      certification != "Cdl Class B",
+                                      certification != "Cdl Class C",
+                                      certification != "CDL Class D",
+                                      certification != "Security Clearance"
+    ) %>%
+      arrange(desc(number)) %>%
+      slice(1:30)
     
     # Return a list containing the filename and alt text
-    list(src = filename,
-         alt = paste("Image number", input$year))
+    plot_cert <- ggplot(data = dat, mapping = aes(x = reorder( factor(name_cert), number), number)) + 
+      geom_bar(stat = "identity") + coord_flip()+
+      labs(x='', y='Number',
+           #title = 'Top 20 Certifications for   Occupation')
+           title = paste('Top 30 Certifications for', 'Occupation') )
+    
+    
+    plot_cert
     
     
     
-  }, deleteFile = FALSE)
-  
-  
-  
-  
-  
-  
+  })
+
   output$tables <- renderTable({
     if(input$selectTable == "Validity"){
       
