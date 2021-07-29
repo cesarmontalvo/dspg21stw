@@ -21,6 +21,8 @@ onetbgt<-onetbgt[,c(2,3,4)]
 onetbgt<-onetbgt[!duplicated(onetbgt[c(1,3)]),] #finally, 1381
 
 head(onetbgt[order(onetbgt$`Confidence of Match`,decreasing=TRUE),])
+onetxbgt<-onetbgt[order(onetbgt$`Confidence of Match`,decreasing=TRUE),]
+write.csv(onetxbgt,"onetxbg.csv")
 hist(onetbgt$'Confidence of Match')
 nrow(onetbgt[onetbgt$'Confidence of Match'>0.4,])
 
