@@ -43,8 +43,8 @@ wheel(cbPalette.blk)
 ## Making the overall network data and its attributes
 
 ```{r}
-cert <- read_xlsx("ONET_SOC_credentials.xlsx")
-stw_change_pct <- read_xlsx("STW_2021_Change.xlsx")
+cert <- read_xlsx("~/dspg21stw/src/ONET_SOC_credentials.xlsx")
+stw_change_pct <- read_xlsx("~/dspg21stw/src/STW_2021_Change.xlsx")
 ```
 
 ```{r}
@@ -88,33 +88,7 @@ length(unique(d$SOC_type))
 unique(d$SOC_type)
 ```
 
-o 11-Management Occupations
-
-o 13- Business and Financial Operations Occupations
-
-o 15-Computer and Mathematical Occupations
-
-o 17- Architecture and Engineering Occupations
-
-o 19- Life, Physical, and Social Science Occupations
-
-o 27-Art, Design, Entertainment, Sports, And Media Occupations
-
-o 29-Healthcare Practitioners and Technical Occupations
-
-o 35-Protective Service Occupations
-
-o 43-Office and Administrative Support Occupations
-
-o 45-Farming, Fishing, and Forestry Occupations
-
-o 47-Construction and Extraction Occupations
-
-o 49-Installation, Maintenance, and Repair Occupations
-
-o 51-Production Occupations
-
-o 53- Transportation and Material Moving Occupations
+c("Management Occupations", "Business and Financial Operations Occupations", "Computer and Mathematical Occupations", "Architecture and Engineering Occupations", "Life, Physical, and Social Science Occupations", "Art, Design, Entertainment, Sports, And Media Occupations", "Healthcare Practitioners and Technical Occupations", "Protective Service Occupations", "Office and Administrative Support Occupations", "Farming, Fishing, and Forestry Occupations", "Construction and Extraction Occupations", "Installation, Maintenance, and Repair Occupations","Production Occupations","Transportation and Material Moving Occupations")
 
 ```{r}
 d <- d %>% mutate(soc_type_name = case_when(SOC_type == "11" ~ "Management Occupations",
@@ -137,13 +111,27 @@ d <- d %>% mutate(soc_type_name = case_when(SOC_type == "11" ~ "Management Occup
 d
 ```
 
+```{r}
+d <- d %>% mutate(soc_type_name = gsub(" ", "\n", soc_type_name),
+                  SOCNAME = gsub(" ", "\n", SOCNAME))
+```
+
 
 ^^ use this as the original df.  An attributes matrix now:
 
 ```{r}
-d_attributes1 <- d %>% select(name = SOCNAME, SOC, SOC_type, Certifying.Organization, Type, GROWTH, PER_CHG)
-d_attributes2 <- d %>% select(name = Certification.Name, SOC, SOC_type, Certifying.Organization, Type, GROWTH, PER_CHG)
+d_attributes1 <- d %>% select(name = SOCNAME, SOC, SOC_type, Certifying.Organization, SOC_type, soc_type_name, GROWTH, PER_CHG)
+d_attributes2 <- d %>% select(name = Certification.Name, SOC, SOC_type, Certifying.Organization, SOC_type, soc_type_name, GROWTH, PER_CHG)
 ```
+
+```{r}
+d_attributes2[d_attributes2$Certification.Name ==  "Commercial Electrical Inspector",]
+```
+
+```{r}
+d[d$Certification.Name ==  "Commercial Electrical Inspector",]
+```
+
 
 ```{r}
 d_attributes1 <- d_attributes1[!duplicated(d_attributes1$name),]
@@ -242,59 +230,7 @@ legend("bottomleft", legend = c("Credential", "Occupation"), pch = c(19, 15), pt
 
 
 
-## Nursing Only
-
-
-first, subset d and d_attributes
-
-```{r}
-nurse <- d[d$SOC == "29-1126" | d$SOC == "29-1292" | d$SOC == "29-2055" | d$SOC == "29-2056" | d$SOC == "29-9093",]
-nurse_attr <- d_attributes[d_attributes$SOC == "29-1126" | d_attributes$SOC == "29-1292" | d_attributes$SOC == "29-2055" | d_attributes$SOC == "29-2056" | d_attributes$SOC == "29-9093",]
-```
-
-```{r}
-nurse_attr <- nurse_attr %>% mutate(socname = case_when(name == "Respiratory Therapists" ~ "Respiratory\nTherapists",
-                                                        name == "Dental Hygienists" ~ "Dental\nHygienists",
-                                                        name == "Surgical Technologists" ~ "Surgical\nTechnologists",
-                                                        name == "Veterinary Technologists and Technicians" ~ "Veterinary\nTechnologists\nand\nTechnicians",
-                                                        name == "Surgical Assistants" ~ "Surgical\nAssistants"))
-```
-
-```{r}
-V(nurse_net)$name[V(nurse_net)$type == F]
-```
-
-```{r}
-nurse <- nurse[!duplicated(nurse[1:2]),]
-```
-
-
-```{r}
-nurse_net <- graph.data.frame(nurse, directed = F, vertices = nurse_attr)
-V(nurse_net)$type <- bipartite.mapping(nurse_net)$type
-nurse_net.pr <- bipartite.projection(nurse_net)
-```
-
-```{r}
-#Color Blind Palettes
-
-#color blind palette with grey
-
-cbPalette <- c("#999999", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
-
-#color blind palette with black
-
-cbPalette.blk<-c("#000000", "#E69F00", "#56B4E9", "#009E73", "#F0E442", "#0072B2", "#D55E00", "#CC79A7")
-
-#display the palette
-
-wheel <- function(col, radius = 1, ...)
-
-  pie(rep(1, length(col)), col = col, radius = radius, ...)
-
-wheel(cbPalette)
-wheel(cbPalette.blk)
-```
+## Health Sciences
 
 
 #creating a graph of only the nursing credentials
@@ -508,38 +444,88 @@ legend("bottomleft", legend = c("Credential", "Occupation"), col = c(cbPalette[8
 legend("bottomleft", legend = c("Positive Projected Growth", "Negative Projected Growth"), col = c(cbPalette[4], cbPalette[7]), pch = c(4,4), pt.cex = 1.5, bty = "n", title = "Edge Type", inset = c(0, .05), xjust = 0)
 ```
 
+
+```{r, fig.height = 20, fig.width = 20}
+g <- induced_subgraph(stw_network, V(stw_network)$soc_name_type == "Architecture and Engineering Occupation")
+E(stw_network)$color <- colour_values(E(stw_network)$PER_CHG, palette = "viridis")
+plot(stw_network[V(stw_network)$soc_name_type == "Architecture and Engineering Occupation",],
+     vertex.label = NA,
+     vertex.label.color = "black",
+     vertex.label.cex = 0.5,
+     vertex.shape = ifelse(V(stw_network)$type, "circle", "square"),
+     vertex.color = ifelse(V(stw_network)$type, cbPalette[8], cbPalette[5]),
+     vertex.size = ifelse(V(stw_network)$type, .75, 2),
+     edge.width = 2,
+     edge.color = E(stw_network)$color,
+     layout = layout_with_graphopt)
+title(main = "STW Credential and Occupation Network", sub = "data from O*Net OnLine")
+legend("bottomleft", legend = c("Credential", "Occupation"), col = c(cbPalette[8], cbPalette[5]), pch = c(19,15), pt.cex = 1.5, bty = "n", title = "Node Type", xjust = 0)
+legend("bottomleft", legend = c("Positive Projected Growth", "Negative Projected Growth"), col = c(cbPalette[4], cbPalette[7]), pch = c(4,4), pt.cex = 1.5, bty = "n", title = "Edge Type", inset = c(0, .05), xjust = 0)
+```
+
+```{r}
+unique(d$soc_type_name)
+```
+
+
 ## subsetting to each broad occupation group
+
+```{r}
+length(unique(d_temp$SOCNAME)) + length(unique(d_temp$Certification.Name))
+length(unique(d_attr_temp$name))
+```
+
+```{r}
+d_temp$Certification.Name[which(! d_temp$Certification.Name %in% d_attr_temp$name)]
+```
+
+```{r}
+d_temp[d_temp$Certification.Name ==  "Commercial Electrical Inspector",]
+d_attributes
+```
+
+
 
 ```{r temp plot for occ groups, fig.height = 20, fig.width=20}
 #Enter the number of the occupation group you'd like to see!
-#"11" "13" "15" "17" "19" "27" "29" "33" "35" "43" "47" "49" "51" "53"
-temp_net_lab <- "19"
+# "17"  "27" "29" "47" "49" "51" "53"
+temp_net_lab <- "Construction\nand\nExtraction\nOccupations"
 #don't do it for the ones that only have one, 11, 13, 15, 19, 33, 35, 43, 45
 
 #generate the network object for the selected graph
 
-d_temp <- d[d$SOC_type == temp_net_lab,]
-d_attr_temp <- d_attributes[d_attributes$SOC_type == temp_net_lab,]
+d_temp <- d[d$soc_type_name == temp_net_lab,]
+#d_temp <- na.omit(d_temp)
+d_attr_temp <- d_attributes[d_attributes$soc_type_name == temp_net_lab,]
+#d_attr_temp <- na.omit(d_attr_temp)
+#d_temp <- na.omit(d_temp)
 
 temp_net <- graph.data.frame(d_temp, directed = F, vertices = d_attr_temp)
+
 #43, 47, 49, 51, 53 have some vertex names in edgelist that are not in the vertex dataframe
 V(temp_net)$type <- bipartite.mapping(temp_net)$type
-temp_net.pr <- bipartite.projection(temp_net)
+#temp_net.pr <- bipartite.projection(temp_net)
 
+
+E(temp_net)$color <- colour_values(E(temp_net)$PER_CHG, palette = "viridis")
 plot(temp_net,
-     vertex.size = ifelse(V(temp_net)$type, 2, 4),
+     vertex.size = ifelse(V(temp_net)$type, 2, 11),
      vertex.shape = ifelse(V(temp_net)$type, "circle", "square"),
      vertex.color = ifelse(V(temp_net)$type, cbPalette[6], cbPalette[5]),
      #vertex.color = cbPalette[V(manu_net)$SOC_type],
      vertex.label = ifelse(V(temp_net)$type == F, V(temp_net)$name, NA),
      vertex.label.color = "black",
-     vertex.label.cex = 0.70,
+     vertex.label.cex = 0.6,
      edge.width = 2,
-     edge.color = "gray")
-title(temp_net_lab, sub = "data from O*Net OnLine")
+     edge.color = E(temp_net)$color,
+     layout = layout_with_kk)
+title("Healthcare Practitioners and Technical Occupation Network", sub = "data from O*Net OnLine")
 legend("bottomleft", legend = c("Credential", "Occupation"), col = c(cbPalette[6], cbPalette[5]), pch = c(19,15), pt.cex = 1.5, bty = "n", title = "Node Type", xjust = 0)
 ```
 
+```{r}
+d_temp
+```
 
 
 ideas: make each of these independently, so that if I pick a color for each subgroup, we could maintain those colors in the bigger graph, or draw lines around them too I suppose.
