@@ -1,0 +1,108 @@
+---
+title: "Manufacturing_net_HT"
+author: "Haleigh Tomlin"
+date: "7/29/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+library(readxl)
+library(tidyverse)
+library(ggplot2)
+library(RColorBrewer)
+library(network)
+library(igraph)
+```
+
+
+```{r}
+man2 <- read_xlsx("Manufacturing_2.xlsx")
+```
+
+```{r}
+man2
+```
+
+```{r}
+man2 <- man2 %>% mutate(Code2 = substr(Code, start = 1, stop = 7))
+```
+
+```{r}
+m2 <- man2 %>% left_join(d, by = c("Code2" = "SOC"))
+```
+
+```{r}
+m2
+```
+
+```{r}
+m2 <- m2 %>% select(SOCNAME, Certification.Name, STEM = Type.x, PER_CHG, soc_type_name)
+```
+
+
+```{r}
+m_attributes1 <- m2 %>% select(name = SOCNAME, STEM, PER_CHG, soc_type_name)
+m_attributes2 <- m2 %>% select(name = Certification.Name, STEM, PER_CHG, soc_type_name)
+
+m_attributes1 <- m_attributes1[!duplicated(m_attributes1$name),]
+m_attributes2 <- m_attributes2[!duplicated(m_attributes2$name),]
+
+m_attributes <- rbind(m_attributes1, m_attributes2)
+```
+
+```{r}
+length(unique(m2$Certification.Name)) + length(unique(m2$SOCNAME))
+length(unique(m_attributes$name))
+
+
+```
+
+```{r}
+m2 <- m2[!duplicated(m2 %>% select(Certification.Name, SOCNAME)),]
+m_attributes <- m_attributes[!duplicated(m_attributes),]
+```
+
+```{r}
+table(na.omit(m_attributes1$name) %in% na.omit(m_attributes2$name))
+```
+
+```{r}
+m_attributes <- m_attributes[!is.na(m_attributes$name),]
+m2 <- m2[!is.na(m2$Certification.Name),]
+m2 <- m2[!is.na(m2$SOCNAME),]
+```
+
+```{r}
+table(m2$STEM)
+```
+
+
+
+```{r}
+m <- graph.data.frame(m2, directed = F, vertices = m_attributes)
+V(m)$type <- bipartite.mapping(m)$type
+m.pr <- bipartite.projection(m)
+```
+
+```{r, fig.height = 20, fig.width = 20}
+plot(m,
+     vertex.shape = ifelse(V(m)$type, "circle", "square"),
+     vertex.color = ifelse(V(m)$type == F, ifelse(V(m)$STEM == "STW", cbPalette[5], cbPalette[1]), cbPalette[4]),
+     vertex.size = ifelse(V(m)$type, 3, 9),
+     vertex.label = ifelse(V(m)$type == F, V(m)$name, NA),
+     vertex.label.color = "black",
+     vertex.label.cex = 0.6,
+     edge.color = cbPalette.blk[1],
+     edge.width = 1.5,
+     layout = layout_nicely)
+title(main = "Manufacturing Credential and Occupation Network", sub = "data from O*Net OnLine")
+legend("bottomleft", legend = c("STW", "Non-STW"), col = c(cbPalette[4],cbPalette[1]), pch = 19, pt.cex = 1.5, bty = "n", title = "Type of Occupation", xjust = 0)
+legend("bottomleft", legend = c("Credential", "Occupation"), pch = c(19, 15), pt.cex = 1.5, bty = "n", title = "Node Type", inset = c(0, .05), xjust = 0)
+```
+
+
+
