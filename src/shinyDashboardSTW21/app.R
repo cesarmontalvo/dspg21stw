@@ -114,7 +114,7 @@ ui <- fluidPage(
              
              
              tabPanel("Methods",
-                      h3("Methods", align = "center", style = "margin-bottom: 50px"),
+                      #h3("Methods", align = "center", style = "margin-bottom: 50px"),
                       style = "margin-left: 120px;",
                       style = "margin-top: 30px;",
                       style = "margin-right: 120px;",
