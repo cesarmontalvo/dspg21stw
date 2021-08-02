@@ -5,9 +5,9 @@ account: marekjozsef
 server: shinyapps.io
 hostUrl: https://api.shinyapps.io/v1
 appId: 4426327
-bundleId: 4872768
+bundleId: 4880626
 url: https://marekjozsef.shinyapps.io/shinyDashboardSTW21/
-when: 1627664103.40193
-lastSyncTime: 1627664103.40193
+when: 1627921368.49489
+lastSyncTime: 1627921368.49489
 asMultiple: FALSE
 asStatic: FALSE

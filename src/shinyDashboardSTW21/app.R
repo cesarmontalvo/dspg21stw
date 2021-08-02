@@ -325,8 +325,8 @@ server <- function(input, output) {
       names(acrossTable)[names(acrossTable) == "original.ndc.company"] <- "Original NDC Company"
       
       acrossTable
-    }else if(input$across == "FDAxDNA"){
-      acrossTable <- read.csv("fda_dna_matching.csv")
+    }else if(input$across == "ONETxVA"){
+      acrossTable <- read.csv("onetva.csv")
       
       acrossTable$fda.row <- NULL
       acrossTable$clean.fda.company.name <- NULL
@@ -341,7 +341,7 @@ server <- function(input, output) {
       names(acrossTable)[names(acrossTable) == "original.dna.company"] <- "Original DNA Company"
       acrossTable
     }else{
-      acrossTable <- read.csv("ndc_dna_matching.csv")
+      acrossTable <- read.csv("vabgt.csv")
       
       acrossTable$X <- NULL
       acrossTable$NDC.row <- NULL
