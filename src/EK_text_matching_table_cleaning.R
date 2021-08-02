@@ -22,9 +22,14 @@ onetbgt<-onetbgt[!duplicated(onetbgt[c(1,3)]),] #finally, 1381
 
 head(onetbgt[order(onetbgt$`Confidence of Match`,decreasing=TRUE),])
 onetxbgt<-onetbgt[order(onetbgt$`Confidence of Match`,decreasing=TRUE),]
+onetxbgt<-onetxbgt[,c(1,3)]
 write.csv(onetxbgt,"onetxbg.csv")
 hist(onetbgt$'Confidence of Match')
 nrow(onetbgt[onetbgt$'Confidence of Match'>0.4,])
+
+onetbgt<-onetbgt[,c(2,4)]
+write.csv(onetbgt,"onetxbg.csv")
+
 
 
 
@@ -37,3 +42,45 @@ confbysoc$SOCGroup<-substr(confbysoc$SOC,1,2)
 boxplot(confidence_cert~SOCGroup,confbysoc,xlab="Occupational Group",ylab="Confidence of Match",
         main="Confidence of Credential Match (BGT to O*NET) by Occupational Group",col=c("#282c4c","#E87404"))
 abline(h=median(confbysoc$confidence_cert),col="red")
+
+
+
+
+
+
+
+
+
+
+
+
+#make onetva table
+
+head(onetva)
+onetva<-onetva[,c(3,5,8)]
+head(onetva)
+onetva<-onetva[!duplicated(onetva[c(1,3)]),]
+onetva<-onetva[order(onetva$`confidence_cert`,decreasing=TRUE),]
+head(onetva)
+onetva<-onetva[,c(1,3)]
+head(onetva)
+onetva<-onetva[onetva$certificate!="",]
+colnames(onetva)<-c("ONET Certification","VA Certification")
+write.csv(onetva,"onetva.csv")
+
+
+
+
+
+
+#make va bgt table
+head(vabgt)
+vabgt<-vabgt[,c(3,5,8)]
+vabgt<-vabgt[!duplicated(vabgt[c(1,3)]),]
+vabgt<-vabgt[order(vabgt$`confidence_cert`,decreasing=TRUE),]
+vabgt<-vabgt[,c(1,3)]
+head(vabgt)
+tail(vabgt)
+vabgt<-vabgt[vabgt$certificate!="",]
+colnames(vabgt)<-c("VA Certification","BGT Certification")
+write.csv(vabgt,"vabgt.csv")
