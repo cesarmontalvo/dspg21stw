@@ -121,22 +121,22 @@ ui <- fluidPage(
                       
                       
                       fluidRow(style = "margin-top:100px",
-                               column(3, h4("Web Scraping")),
+                               column(3, h5("Web Scraping")),
                                column(6, wellPanel(p(style = "font-size:15px","To collect the credential and SOC data from O*NET, we used R’s rvest web scraping package. We looped through the list of 133 Skilled Technical Workforce SOC codes and found all associated credentials for each. O*NET also reports the certifying organization and the type of credential, so we collected that information as well. In the end, we created a data frame with 1137 rows and 4 columns.  ")))
                       ),
                       hr(),
                       fluidRow(style = "margin-top:100px",
-                               column(3, h4("Cleaning")),
+                               column(3, h5("Cleaning")),
                                column(6, wellPanel(p(style = "font-size:15px","To match credentials across the O*NET, BGT, and VA Community Colleges data sources, we had to perform some preliminary data cleaning. We used regular expressions to remove acronyms within parentheses in the BGT dataset and states in the Community Colleges dataset. We also removed stop words and stemmed the words in the datasets, removing common, superfluous suffixes. Once the credentials were cleaned within all three datasets, we were ready to perform our text matching.")))
                       ),
                       hr(),
                       fluidRow(style = "margin-top:100px",
-                               column(3, h4("Text Matching")),
+                               column(3, h5("Text Matching")),
                                column(6, wellPanel(p(style = "font-size:15px","Filling crucial jobs in the Skilled Technical Workforce requires coordination between governments, industries, and educational institutions. Unfortunately, there are inconsistencies in the language these three bodies use to describe the credentials required for these jobs. We used text matching methods to address some of these inconsistencies. To do this, we used the stringdist and lingmatch R packages. Specifically, we used the stringdist function within the stringdist package to calculate the Damerau-Levenshtein distance between each pair of credentials across our three datasets. The lingmatch package allowed us to easily create matrices where words were represented by columns and credentials were represented by rows. This aided the distance calculations across each pair of data sources.  ")))
                       ),
                       hr(),
                       fluidRow(style = "margin-top:100px",
-                               column(3, h4("Network Analysis")),
+                               column(3, h5("Network Analysis")),
                                column(6, wellPanel(p(style = "font-size:15px","We used the R package igraph in order to visualize the links between occupations and credentials within the Skilled Technical Workforce. By visualizing these links and combining supplemental information, such as the projected growth of specific occupations in the STW, we are able to analyze the paths workers can take in the STW.  ")))
                       )
                       
