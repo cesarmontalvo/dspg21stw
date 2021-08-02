@@ -29,7 +29,7 @@ ui <- fluidPage(
                         political science, policy, health IT, public health, program evaluation, and data science.
                         The SDAD office is located near our nation's capital in Arlington, VA. You can learn more about us at",
                         tags$a(href="https://biocomplexity.virginia.edu/social-decision-analytics.", "https://biocomplexity.virginia.edu/social-decision-analytics."), style = "color:#232D4B"),
-                      p("The Data Science for the Public Good (DSPG) Young Scholars program is a summer immersive program held at SDAD. Entering its seventh year, the program engages students from across the country
+                      p("The Data Science for the Public Good (DSPG) Young Scholars program is a summer immersive program held at SDAD. Entering its eighth year, the program engages students from across the country
                         to work together on projects that address state, federal, and local government challenges around critical social issues relevant in the world today.
                         DSPG young scholars conduct research at the intersection of statistics, computation, and the social sciences to determine how information
                         generated within every community can be leveraged to improve quality of life and inform public policy. ", style = "color:#232D4B"),
