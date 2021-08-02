@@ -92,14 +92,14 @@ health_sci.pr <- bipartite.projection(health_sci)
 
 ifelse(V(health_sci)$type, "circle", "square")
 
-```{r, fig.height = 25, fig.width = 25}
+```{r, fig.height = 20, fig.width = 20}
 plot(health_sci,
      vertex.shape = ifelse(V(health_sci)$type, "circle", "square"),
      vertex.color = ifelse(V(health_sci)$type == F, ifelse(V(health_sci)$STEM == "STW", cbPalette[5], cbPalette[1]), cbPalette[4]),
-     vertex.size = ifelse(V(health_sci)$type, 1, 9),
+     vertex.size = ifelse(V(health_sci)$type, 1, 10),
      vertex.label = ifelse(V(health_sci)$type == F, V(health_sci)$name, NA),
      vertex.label.color = "black",
-     vertex.label.cex = 0.6,
+     vertex.label.cex = 0.5,
      edge.color = cbPalette.blk[1],
      edge.width = 1.5,
      layout = layout_nicely)

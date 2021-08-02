@@ -166,9 +166,21 @@ ui <- fluidPage(
                                    sidebarPanel(
                                      h4("Occupation"),
                                      selectInput("network", "Occupation", choices = c("Health Sciences", "Cybersecurity", "Manufacturing")),
-                                     p("Explanation Here.  Perhaps depending on Choice, a different explanation comes up.")),
+                                     p("Here we show the breakdown of occupation networks for three occupations of interest to the NSF,
+                                       Health Sciences, Cybersecurity, and Manufacturing.  For these graphs, we expand the information we include
+                                       to also analyze the progression from STW jobs to STEM careers.  In these graphs, we show STW jobs with yellow
+                                       squares and STEM jobs with gray squares.  The idea is that many of these occupations share credentials,
+                                       and that perhaps there is a path to a STEM field through experience and credential gain.")),
+                                    # tableOutput("nettab1"),
                                    mainPanel(
-                                     imageOutput("netgraph")))),
+                                     imageOutput("netgraph"))),
+                                 fluidRow(style = "margin-top:100px",
+                                          column(3, wellPanel(
+                                            br(),
+                                            br(),
+                                            tags$b("Network Statistics & Observations"),
+                                            textOutput("selectedvar1"))
+                                          ))),
 #<<<<<<< HEAD
                         tabPanel("Network Analysis - STW by Major Occupation Group", style = "margin:20px",
                                  h5("STW by Major Occupation Group"),
@@ -186,9 +198,20 @@ ui <- fluidPage(
                                                                                         "Installation, Maintenance, and Repair Occupations",
                                                                                         "Production Occupations",
                                                                                         "Transportation and Material Moving Occupations")),
-                                     p("Explanation here.  Perhaps depending on Choice, a different explanation comes up.")),
+                                     p("We examined the entire network graph for the STW, and also break them down into occupation groups
+                                       to see how connected each major occupation group is by credentials.  We only include major occupation groups that
+                                       have multiple connected within them in the STW."),
+                                     p()),
+                                   #tableOutput("nettab2")),
                                    mainPanel(
-                                     imageOutput("occ_graph")))),#end results tab 
+                                     imageOutput("occ_graph"))),
+                                 fluidRow(style = "margin-top:100px",
+                                          column(3, wellPanel(
+                                            br(),
+                                            br(),
+                                            tags$b("Network Statistics & Observations"),
+                                            textOutput("selectedvar2"))
+                                          ))),#end results tab 
 #=======
                         
                         tabPanel("Boxplots",style="margin:20px",
@@ -367,12 +390,20 @@ server <- function(input, output) {
     # Return a list containing the filename and alt text
     list(src = filename,
          alt = paste(input$network, "Network"),
-         width = 900,
-         height = 900)
+         width = 800,
+         height = 800)
+    
+    
     
     
     
   }, deleteFile = FALSE)
+  
+  output$selectedvar1 <- renderText({
+    paste("Network Statistics and comments for", input$network)
+  })
+  
+  
   
   
 #<<<<<<< HEAD
@@ -386,10 +417,13 @@ server <- function(input, output) {
     # Return a list containing the filename and alt text
     list(src = filename,
          alt = paste(input$occ_group, "Network"),
-         width = 900,
-         height = 900)})
+         width = 800,
+         height = 800)})
+  
+  
 #=======
 
+  
   
 #<<<<<<< HEAD
   output$occ_graph <- renderImage({
@@ -407,6 +441,12 @@ server <- function(input, output) {
     
     
   }, deleteFile = FALSE)
+  
+  
+  
+  output$selectedvar2 <- renderText({
+    paste("Network Statistics and comments for", input$occ_group)
+  })
 #=======
   
 #>>>>>>> 3814624d0ea896e9d7d428b327547af7d7df317d
