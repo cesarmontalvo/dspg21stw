@@ -159,6 +159,10 @@ ui <- fluidPage(
                         
                         tabPanel("Network Analysis - Occupation Clusters", style = "margin:20px",
                                  h5("Occupation Clusters"),
+                                 p("Displayed are the network graphs for STW and STEM (Science, Technology, Engineering, and Mathematics) occupations in the occupation clusters, Health Sciences, Cybersecurity, and Manufacturing.
+                                       In all three networks, STW occupations are identified with yellow squares and STEM occupations with grey squares, inside the square are the Standard Occupational Classification System (SOC) titles.
+                                       Only STEM occupations that require a bachelor’s degree or less are included. Each square is connected to the certifications listed for that occupation in O*NET online.
+                                       The goal is to identify certifications that are portable across STW and STEM occupations"),
                                  br(),
                                  br(),
                                  br(),
@@ -166,24 +170,19 @@ ui <- fluidPage(
                                    sidebarPanel(
                                      h4("Occupation"),
                                      selectInput("network", "Occupation", choices = c("Health Sciences", "Cybersecurity", "Manufacturing")),
-                                     p("Here we show the breakdown of occupation networks for three occupations of interest to the NSF,
-                                       Health Sciences, Cybersecurity, and Manufacturing.  For these graphs, we expand the information we include
-                                       to also analyze the progression from STW jobs to STEM careers.  In these graphs, we show STW jobs with yellow
-                                       squares and STEM jobs with gray squares.  The idea is that many of these occupations share credentials,
-                                       and that perhaps there is a path to a STEM field through experience and credential gain.")),
+                                     textOutput("vardescrip")),
                                     # tableOutput("nettab1"),
                                    mainPanel(
                                      imageOutput("netgraph"))),
-                                 fluidRow(style = "margin-top:100px",
+                                 fluidRow(
                                           column(3, wellPanel(
-                                            br(),
-                                            br(),
                                             tags$b("Network Statistics & Observations"),
-                                            textOutput("selectedvar1"))
+                                            uiOutput("selectedvar1"))
                                           ))),
 #<<<<<<< HEAD
                         tabPanel("Network Analysis - STW by Major Occupation Group", style = "margin:20px",
                                  h5("STW by Major Occupation Group"),
+                                 p("The network is displayed for the all 133 STW occupations and separately for the seven major occupation groups that contain more than two STW occupations. The lines connecting the STW occupation titles to certifications are used to identify the 2019-2029 Bureau of Labor Employment Projections. The two shades of blue indicate occupations that will decline in number over the coming years, the two shades of yellow identify occupations that will increase, and red indicates occupations whose numbers will increase by more than 50 percent."),
                                  br(),
                                  br(),
                                  br(),
@@ -198,19 +197,15 @@ ui <- fluidPage(
                                                                                         "Installation, Maintenance, and Repair Occupations",
                                                                                         "Production Occupations",
                                                                                         "Transportation and Material Moving Occupations")),
-                                     p("We examined the entire network graph for the STW, and also break them down into occupation groups
-                                       to see how connected each major occupation group is by credentials.  We only include major occupation groups that
-                                       have multiple connected within them in the STW."),
-                                     p()),
+                                  
+                                     img(height = "100%", width = "100%", src = "test.png")),
                                    #tableOutput("nettab2")),
                                    mainPanel(
                                      imageOutput("occ_graph"))),
-                                 fluidRow(style = "margin-top:100px",
+                                 fluidRow(
                                           column(3, wellPanel(
-                                            br(),
-                                            br(),
                                             tags$b("Network Statistics & Observations"),
-                                            textOutput("selectedvar2"))
+                                            uiOutput("selectedvar2"))
                                           ))),#end results tab 
 #=======
                         
@@ -406,8 +401,8 @@ server <- function(input, output) {
     # Return a list containing the filename and alt text
     list(src = filename,
          alt = paste(input$network, "Network"),
-         width = 800,
-         height = 800)
+         width = 1000,
+         height = 1000)
     
     
     
@@ -415,8 +410,33 @@ server <- function(input, output) {
     
   }, deleteFile = FALSE)
   
-  output$selectedvar1 <- renderText({
-    paste("Network Statistics and comments for", input$network)
+  output$vardescrip <- renderText({
+    if (input$network == "Health Sciences"){
+      paste("The Health Sciences Occupation Cluster is defined by O*NET. O*NET occupation clusters include occupations in the same filed that require similar skills, knowledge, and abilities. The Health Science cluster contains six STW occupations.")
+    }
+    
+    else if (input$network == "Cybersecurity"){
+      paste("There is no Cybersecurity Occupation Cluster in O*NET, so occupations in the cluster were identified using two sources. The first used O*NET online and searched on the term “cyber” keeping only those occupations in the STW. The second used information on the National Institute of Standards and Technology’s National Initiative for Cybersecurity Education (NICE) website. In conjunction with CompTIA and Burning Glass, NICE developed CyberSeek which provides detailed information about the credentials demanded by employers and career pathways in cybersecurity that maps opportunities for advancement in the field. Feeder and entry role occupations listed on CyberSeek along with all the common job titles were entered into O*NET online and those occupations in the STW and STEM occupations that require a bachelor’s degree or less were included.")
+    }
+    
+    else {
+      paste("The Manufacturing Occupation Cluster is defined by O*NET career clusters. O*NET career clusters include occupations in the same filed that require similar skills, knowledge, and abilities. There are 148 occupations in the Manufacturing cluster, thirty-three (22%) are STW occupations.")
+    }
+  })
+  
+  output$selectedvar1 <- renderUI({
+    if (input$network == "Health Sciences"){
+      HTML("<ul><li>Network size: 471 nodes</li><li>Network density (# of edges / # of possible edges): 0.004</li><li>Number of components: 20</li><li>Diameter (the greatest distance between any pair of connected vertices): 14</li></ul>")
+    }
+    
+    else if (input$network == "Cybersecurity"){
+      HTML("<ul><li>Network size: 471 nodes</li><li>Network density (# of edges / # of possible edges): 0.004</li><li>Number of components: 20</li><li>Diameter (the greatest distance between any pair of connected vertices): 14</li></ul>")
+    }
+    
+    else {
+      HTML("<ul><li>Network size: 471 nodes</li><li>Network density (# of edges / # of possible edges): 0.004</li><li>Number of components: 20</li><li>Diameter (the greatest distance between any pair of connected vertices): 14</li></ul>")
+    }
+    
   })
   
   
@@ -460,8 +480,33 @@ server <- function(input, output) {
   
   
   
-  output$selectedvar2 <- renderText({
-    paste("Network Statistics and comments for", input$occ_group)
+  output$selectedvar2 <- renderUI({
+    if (input$occ_group == "Entire Network"){
+      HTML("<ul><li>Network size: 471 nodes</li><li>Network density (# of edges / # of possible edges): 0.004</li><li>Number of components: 20</li><li>Diameter (the greatest distance between any pair of connected vertices): 14</li></ul>")
+    }
+    
+    else if (input$occ_group == "Architecture and Engineering Occupations"){
+      HTML("<ul><li>Network size: 471 nodes</li><li>Network density (# of edges / # of possible edges): 0.004</li><li>Number of components: 20</li><li>Diameter (the greatest distance between any pair of connected vertices): 14")
+    }
+    else if (input$occ_group == "Art, Design, Entertainment, Sports, and Media Occupations"){
+      HTML("<ul><li>Network size: 471 nodes</li><li>Network density (# of edges / # of possible edges): 0.004</li><li>Number of components: 20</li><li>Diameter (the greatest distance between any pair of connected vertices): 14")
+    }
+    else if (input$occ_group == "Healthcare Practitioners and Technical Occupations"){
+      HTML("<ul><li>Network size: 471 nodes</li><li>Network density (# of edges / # of possible edges): 0.004</li><li>Number of components: 20</li><li>Diameter (the greatest distance between any pair of connected vertices): 14")
+    }
+    else if (input$occ_group == "Construction and Extraction Occupations"){
+      HTML("<ul><li>Network size: 471 nodes</li><li>Network density (# of edges / # of possible edges): 0.004</li><li>Number of components: 20</li><li>Diameter (the greatest distance between any pair of connected vertices): 14")
+    }
+    else if (input$occ_group == "Installation, Maintenance, and Repair Occupations"){
+      HTML("<ul><li>Network size: 471 nodes</li><li>Network density (# of edges / # of possible edges): 0.004</li><li>Number of components: 20</li><li>Diameter (the greatest distance between any pair of connected vertices): 14")
+    }
+    else if (input$occ_group == "Production Occupations"){
+      HTML("<ul><li>Network size: 471 nodes</li><li>Network density (# of edges / # of possible edges): 0.004</li><li>Number of components: 20</li><li>Diameter (the greatest distance between any pair of connected vertices): 14")
+    }
+    
+    else {
+      HTML("<ul><li>Network size: 471 nodes</li><li>Network density (# of edges / # of possible edges): 0.004</li><li>Number of components: 20</li><li>Diameter (the greatest distance between any pair of connected vertices): 14")
+    }
   })
 #=======
   
