@@ -92,8 +92,8 @@ health_sci.pr <- bipartite.projection(health_sci)
 
 ifelse(V(health_sci)$type, "circle", "square")
 
-```{r, fig.height = 20, fig.width = 20}
-plot(health_sci,
+```{r, fig.height = 20, fig.width = 35}
+plot(health_sci, rescale = F, ylim=c(1,4),xlim=c(-17,24), asp = 0,
      vertex.shape = ifelse(V(health_sci)$type, "circle", "square"),
      vertex.color = ifelse(V(health_sci)$type == F, ifelse(V(health_sci)$STEM == "STW", cbPalette[5], cbPalette[1]), cbPalette[4]),
      vertex.size = ifelse(V(health_sci)$type, 1, 10),
@@ -106,6 +106,11 @@ plot(health_sci,
 title(main = "Health Sciences Credential and Occupation Network", sub = "data from O*Net OnLine")
 legend("bottomleft", legend = c("Credential", "Occupation"), col = c(cbPalette[4], cbPalette[5]), pch = c(19,15), pt.cex = 1.5, bty = "n", title = "Node Type", xjust = 0)
 ```
+
+```{r}
+get_network_stats(health_sci)
+```
+
 
 ```{r}
 hs[hs$Occupation == "Nursing Assistants",]
