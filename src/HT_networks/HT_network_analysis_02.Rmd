@@ -40,6 +40,46 @@ wheel(cbPalette)
 wheel(cbPalette.blk)
 ```
 
+```{r, fig.height = 10}
+#making a legend with Vicki's code
+#install.packages("wesanderson")
+
+library(wesanderson)
+png('test.png',width=1000,height=800,units="px",bg = "transparent")
+
+Zissou1<-c("#3B9AB2", "#78B7C5", "#EBCC2A", "#E1AF00", "#F21A00")
+
+WA.pal<-wes_palette("Zissou1", 5, type = c("discrete"))
+
+legend.network<- function(col, radius = 1, ...)
+
+{
+
+pie(rep(1, length(col)), col=col, radius=radius,
+
+labels=c("Decrease\n[-35.7% to -20.0%]", "Decrease\n[-19.9% to -0.2%]", "Increase\n[0.2% to 19.9%]",
+
+"Increase\n[20.0% to 30.5%]", "Increase\n[50.5% to 60.7%]"),
+
+cex=1.2, init.angle=18,
+
+main="Bureau of Labor Statistics: 2019-2029 Employment Projection Categories")
+
+}
+
+legend.network(WA.pal)
+plot.background = element_rect(fill = "transparent", color = NA)
+```
+
+```{r}
+legend.network(WA.pal)
+```
+
+```{r}
+WA.pal
+```
+
+
 #function for printing network stats
 
 ```{r}
@@ -109,9 +149,28 @@ d <- d %>% mutate(soc_type_name = gsub(" ", "\n", soc_type_name),
 
 ^^ use this as the original df.  An attributes matrix now:
 
+
+labels=c("Decrease\n[-35.7% to -20.0%]", "Decrease\n[-19.9% to -0.2%]", "Increase\n[0.2% to 19.9%]",
+
+"Increase\n[20.0% to 30.5%]", "Increase\n[50.5% to 60.7%]")
+
 ```{r}
-d_attributes1 <- d %>% select(name = SOCNAME, SOC, SOC_type, Certifying.Organization, SOC_type, soc_type_name, GROWTH, PER_CHG)
-d_attributes2 <- d %>% select(name = Certification.Name, SOC, SOC_type, Certifying.Organization, SOC_type, soc_type_name, GROWTH, PER_CHG)
+d <- d %>% mutate(PER_CHG_CAT = case_when(PER_CHG <= -20.0 ~ "highly decreasing",
+                                          PER_CHG > -20.0 & PER_CHG <= -0.2 ~ "decreasing",
+                                          PER_CHG > -0.2 & PER_CHG <= 19.9 ~ "increasing",
+                                          PER_CHG > 19.9 & PER_CHG <= 30.5 ~ "highly increasing",
+                                          PER_CHG > 30.5 ~ "very highly increasing"))
+
+```
+
+```{r}
+d$PER_CHG_CAT <- as.factor(d$PER_CHG_CAT)
+levels(d$PER_CHG_CAT) <- c("highly decreasing", "decreasing", "increasing", "highly increasing", "very highly increasing")
+```
+
+```{r}
+d_attributes1 <- d %>% select(name = SOCNAME, SOC, SOC_type, Certifying.Organization, SOC_type, soc_type_name, GROWTH, PER_CHG_CAT)
+d_attributes2 <- d %>% select(name = Certification.Name, SOC, SOC_type, Certifying.Organization, SOC_type, soc_type_name, GROWTH, PER_CHG_CAT)
 
 d_attributes1 <- d_attributes1[!duplicated(d_attributes1$name),]
 d_attributes2 <- d_attributes2[!duplicated(d_attributes2$name),]
@@ -121,17 +180,14 @@ d_attributes <- rbind(d_attributes1, d_attributes2)
 d <- d[!duplicated(d),]
 ```
 
-```{r}
-d$PER_CHG <- as.numeric(d$PER_CHG)
-```
 
 ```{r}
-range(d$PER_CHG, na.rm = T)
+ggplot(d, aes(PER_CHG_CAT)) + geom_bar(fill = WA.pal[5])
 ```
 
 
-```{r, fig.height = 20}
-ggplot(d, aes(PER_CHG)) + geom_histogram() + facet_wrap(~SOC_type)
+```{r}
+range(as.numeric(d$PER_CHG), na.rm = T)
 ```
 
 
@@ -177,26 +233,7 @@ cyber <- cyber[!duplicated(cyber[1:2]),]
 cyber <- cyber %>% select(ONETSOCTITLE, Certification, STW, Origin, Certifier, Level, InDemand)
 ```
 
-```{r cybernet graph}
-g_test <- graph.data.frame(cyber, directed = F, vertices = cybermat_attributes)
-V(g_test)$type <- bipartite.mapping(g_test)$type
-g_test.pr <- bipartite.projection(g_test)
-```
 
-```{r, fig.height = 20, fig.width = 20}
-plot(g_test,vertex.shape=ifelse(V(g_test)$type,"circle","square"),
-     vertex.color = ifelse(V(g_test)$type == F, ifelse(V(g_test)$STW == "STW", cbPalette[5], cbPalette[1]), cbPalette[3]),
-     edge.color = ifelse(E(g_test)$STW == "STW", cbPalette.blk[7], cbPalette[1]),
-     vertex.label = ifelse(V(g_test)$type == F, V(g_test)$socname, NA),
-     vertex.label.cex = 0.65,
-     vertex.label.dist = 0,
-     vertex.label.color = "black",
-     vertex.size = ifelse(V(g_test)$type, 1.5, 9.3),
-     directed = F)
-title(main = "Cybersecurity Credential and Occupation Network", sub = "data from O*Net OnLine")
-legend("bottomleft", legend = c("STW", "Non-STW"), col = c(cbPalette[5],cbPalette[1]), pch = 19, pt.cex = 1.5, bty = "n", title = "Type of Occupation", xjust = 0)
-legend("bottomleft", legend = c("Credential", "Occupation"), pch = c(19, 15), pt.cex = 1.5, bty = "n", title = "Node Type", inset = c(0, .05), xjust = 0)
-```
 
 
 
@@ -295,21 +332,30 @@ legend("bottomleft", legend = c("Credential", "Occupation"), col = c(cbPalette[8
 legend("bottomleft", legend = c("Positive Projected Growth", "Negative Projected Growth"), col = c(cbPalette[4], cbPalette[7]), pch = c(4,4), pt.cex = 1.5, bty = "n", title = "Edge Type", inset = c(0, .05), xjust = 0)
 ```
 
+```{r}
+
+unique(E(stw_network)$PER_CHG_CAT)
+```
+
+```{r}
+E(stw_network)$color <- ifelse(E(stw_network)$PER_CHG_CAT == "highly decreasing", WA.pal[1], ifelse(E(stw_network)$PER_CHG_CAT == "decreasing", WA.pal[2], ifelse(E(stw_network)$PER_CHG_CAT == "increasing", WA.pal[3], WA.pal[4])))
+```
+
+
+
 ```{r, fig.height = 20, fig.width = 20}
-E(stw_network)$color <- colour_values(E(stw_network)$PER_CHG, palette = "magma")
+#E(stw_network)$color <- colour_values(E(stw_network)$PER_CHG_CAT, palette = WA.pal)
 plot(stw_network,
      vertex.label = NA,
      vertex.label.color = "black",
      vertex.label.cex = 0.5,
      vertex.shape = ifelse(V(stw_network)$type, "circle", "square"),
      vertex.color = ifelse(V(stw_network)$type, cbPalette[8], cbPalette[5]),
-     vertex.size = ifelse(V(stw_network)$type, .75, 2),
+     vertex.size = ifelse(V(stw_network)$type, 1, 4),
      edge.width = 2,
      edge.color = E(stw_network)$color,
-     layout = layout_with_graphopt)
-title(main = "STW Credential and Occupation Network", sub = "data from O*Net OnLine")
-legend("bottomleft", legend = c("Credential", "Occupation"), col = c(cbPalette[8], cbPalette[5]), pch = c(19,15), pt.cex = 1.5, bty = "n", title = "Node Type", xjust = 0)
-legend("bottomleft", legend = c("Positive Projected Growth", "Negative Projected Growth"), col = c(cbPalette[4], cbPalette[7]), pch = c(4,4), pt.cex = 1.5, bty = "n", title = "Edge Type", inset = c(0, .05), xjust = 0)
+     layout = layout_with_gem, xaxs = i, yaxs = i)
+legend("topright", legend = c("STW Occupations: yellow squares", "Certifications: pink circles"), bty = "n", title = "Legend", xjust = 0, cex = 1.5)
 ```
 
 ```{r}
@@ -386,7 +432,7 @@ table(duplicated(d_arch))
 
 
 ```{r, fig.height = 25, fig.width= 25}
-E(arch_net)$color <- colour_values(E(arch_net)$PER_CHG, palette = "viridis")
+E(arch_net)$color <- colour_values(E(arch_net)$PER_CHG, palette = "WA.pal")
 plot(arch_net,
      vertex.size = ifelse(V(arch_net)$type, 2, 9),
      vertex.shape = ifelse(V(arch_net)$type, "circle", "square"),

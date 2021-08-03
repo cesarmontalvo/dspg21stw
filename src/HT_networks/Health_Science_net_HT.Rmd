@@ -36,36 +36,63 @@ hs_stem_creds <- read.csv("hs_stem_credentials.csv")
 ```
 
 ```{r}
-hs
+#hs_stem_creds <- hs_stem_creds %>% select(SOC, Cert = Certification.Name)
 ```
 
 joining back to the HS data.
 
 ```{r}
-table(unique(hs$...6))
-```
-
-
-
-```{r}
-hs <- hs_data %>% left_join(hs_stem_creds, by = c("Code" = "SOC"))
-hs <- hs[-1]
-hs <- hs %>% mutate("STEM" = `...6`) 
-hs <- subset(hs, select = c(name = Certification.Name, Occupation, Code, STEM))
+hs_data
 ```
 
 ```{r}
-hs
+hs_data <- hs_data %>% mutate(ONETSOC = substr(Code, start = 1, stop = 7))
+hs_data <- hs_data %>% mutate(STEM = `...6`) 
+hs_data <- hs_data %>% select(ONETSOC, Code, STEM, Occupation)
 ```
 
 ```{r}
-hs <- hs %>% mutate(Occupation = gsub(" ", "\n", Occupation))
+hs_stem_creds <- hs_stem_creds %>% select(Certification_Name = Certification.Name, SOC) %>% mutate(ONETSOC = substr(SOC, start = 1, stop = 7))
+```
+
+```{r}
+hs_stem_creds
+```
+```{r}
+hs <- hs_data %>% left_join(hs_stem_creds, by = c("Code" = "SOC", "ONETSOC"))
 ```
 
 
 ```{r}
-hs_attributes1 <- hs %>% select(name = Occupation, Code, STEM)
-hs_attributes2 <- hs %>% select(name = Certification.Name, Code, STEM)
+hs2
+```
+
+```{r}
+stw_certs <- d %>% select(ONETSOC = SOC, Cert = Certification.Name)
+```
+
+```{r}
+hs2 <- hs %>% left_join(stw_certs, by = "ONETSOC")
+```
+
+```{r}
+hs2$Certification_Name <- as.character(hs2$Certification_Name)
+hs2$Certification <- ifelse(is.na(hs2$Certification_Name), hs2$Cert, hs2$Certification_Name)
+
+```
+
+```{r}
+hs2 <- hs2 %>% mutate(Occupation = gsub(" ", "\n", Occupation))
+```
+
+
+```{r}
+hs2 <- hs2 %>% select(ONETSOC, Certification, Occupation, STEM)
+```
+
+```{r}
+hs_attributes1 <- hs2 %>% select(name = ONETSOC, Occupation, STEM)
+hs_attributes2 <- hs2 %>% select(name = Certification, Occupation, STEM)
 
 hs_attributes1 <- hs_attributes1[!duplicated(hs_attributes1$name),]
 hs_attributes2 <- hs_attributes2[!duplicated(hs_attributes2$name),]
@@ -75,36 +102,33 @@ hs_attributes <- rbind(hs_attributes1, hs_attributes2)
 
 
 ```{r}
-hs <- hs[!duplicated(hs),]
-
-hs2 <- na.omit(hs)
-hs_attributes_2 <- na.omit(hs_attributes)
-```
+hs2 <- na.omit(hs2)
+hs2 <- hs2[!duplicated(hs2),]
+hsci <- graph.data.frame(hs2)
 
 
-```{r}
-health_sci <- graph.data.frame(hs2, directed = F, vertices = hs_attributes_2)
+nodelist <- data.frame(name = igraph::V(hsci)$name)
 
+nodelist <- nodelist %>% left_join(hs_attributes, by = "name")
+
+health_sci <- graph.data.frame(hs2, directed = F, vertices = nodelist)
 V(health_sci)$type <- bipartite.mapping(health_sci)$type
-health_sci.pr <- bipartite.projection(health_sci)
 ```
 
 
 ifelse(V(health_sci)$type, "circle", "square")
 
-```{r, fig.height = 20, fig.width = 35}
-plot(health_sci, rescale = F, ylim=c(1,4),xlim=c(-17,24), asp = 0,
+```{r, fig.height = 20, fig.width = 20}
+plot(health_sci,
      vertex.shape = ifelse(V(health_sci)$type, "circle", "square"),
      vertex.color = ifelse(V(health_sci)$type == F, ifelse(V(health_sci)$STEM == "STW", cbPalette[5], cbPalette[1]), cbPalette[4]),
-     vertex.size = ifelse(V(health_sci)$type, 1, 10),
-     vertex.label = ifelse(V(health_sci)$type == F, V(health_sci)$name, NA),
+     vertex.size = ifelse(V(health_sci)$type, 2, 10),
+     vertex.label = ifelse(V(health_sci)$type == F, V(health_sci)$Occupation, NA),
      vertex.label.color = "black",
      vertex.label.cex = 0.5,
-     edge.color = cbPalette.blk[1],
      edge.width = 1.5,
-     layout = layout_nicely)
-title(main = "Health Sciences Credential and Occupation Network", sub = "data from O*Net OnLine")
-legend("bottomleft", legend = c("Credential", "Occupation"), col = c(cbPalette[4], cbPalette[5]), pch = c(19,15), pt.cex = 1.5, bty = "n", title = "Node Type", xjust = 0)
+     layout = layout_nicely, xaxs = i, yaxs = i)
+legend("topright", legend = c("STW: yellow squares", "STEM: gray squares", "Certifications: green circles"), bty = "n", title = "Legend", xjust = 0, cex = 1.5)
 ```
 
 ```{r}
