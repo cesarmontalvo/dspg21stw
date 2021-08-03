@@ -15,6 +15,7 @@ library(network)
 library(readxl)
 library(tidyr)
 library(tidyverse)
+library(ggplot2)
 ```
 
 
@@ -37,6 +38,19 @@ wheel <- function(col, radius = 1, ...)
 
 wheel(cbPalette)
 wheel(cbPalette.blk)
+```
+
+#function for printing network stats
+
+```{r}
+get_network_stats <- function(network.obj) {
+  net_size <- vcount(network.obj)
+  net_dens <- edge_density(network.obj)
+  net_comp <- count_components(network.obj)
+  net_diam <- diameter(network.obj)
+  net_cluster <- transitivity(network.obj)
+  return(paste("Size: ", net_size, "Density: ", net_dens, "Number of Components: ", net_comp, "Diameter: ", net_diam, "Clustering Coefficient: ", net_cluster))
+}
 ```
 
 
@@ -105,6 +119,19 @@ d_attributes2 <- d_attributes2[!duplicated(d_attributes2$name),]
 d_attributes <- rbind(d_attributes1, d_attributes2)
 
 d <- d[!duplicated(d),]
+```
+
+```{r}
+d$PER_CHG <- as.numeric(d$PER_CHG)
+```
+
+```{r}
+range(d$PER_CHG, na.rm = T)
+```
+
+
+```{r, fig.height = 20}
+ggplot(d, aes(PER_CHG)) + geom_histogram() + facet_wrap(~SOC_type)
 ```
 
 
@@ -269,7 +296,7 @@ legend("bottomleft", legend = c("Positive Projected Growth", "Negative Projected
 ```
 
 ```{r, fig.height = 20, fig.width = 20}
-E(stw_network)$color <- colour_values(E(stw_network)$PER_CHG, palette = "viridis")
+E(stw_network)$color <- colour_values(E(stw_network)$PER_CHG, palette = "magma")
 plot(stw_network,
      vertex.label = NA,
      vertex.label.color = "black",
@@ -283,6 +310,10 @@ plot(stw_network,
 title(main = "STW Credential and Occupation Network", sub = "data from O*Net OnLine")
 legend("bottomleft", legend = c("Credential", "Occupation"), col = c(cbPalette[8], cbPalette[5]), pch = c(19,15), pt.cex = 1.5, bty = "n", title = "Node Type", xjust = 0)
 legend("bottomleft", legend = c("Positive Projected Growth", "Negative Projected Growth"), col = c(cbPalette[4], cbPalette[7]), pch = c(4,4), pt.cex = 1.5, bty = "n", title = "Edge Type", inset = c(0, .05), xjust = 0)
+```
+
+```{r}
+get_network_stats(stw_network)
 ```
 
 
@@ -315,84 +346,114 @@ ideas: make each of these independently, so that if I pick a color for each subg
 if I make them independently, it will only be a matter of naming them or lumping them together.  Then we could just direct the shiny app to be to the code for that one.
 
 #Architecture and Engineering
-```{r}
 
+```{r}
+d_arch<- d[d$soc_type_name == "Architecture\nand\nEngineering\nOccupation",]
+#d_arch <- na.omit(d_repair)
 ```
 
 
 ```{r}
-#d$PER_CHG <- ifelse(d$PER_CHG == "NA", NA, d$PER_CHG)
+d_arch <- d_arch %>% select(-Type)
+d_arch <- na.omit(d_arch)
+d_arch <- d_arch[!duplicated(d_arch),]
+arch <- graph.data.frame(d_arch)
+
+
+nodelist <- data.frame(name = igraph::V(arch)$name)
+
+nodelist <- nodelist %>% left_join(d_attributes, by = "name")
+
+arch_net <- graph.data.frame(d_arch, directed = F, vertices = nodelist)
+V(arch_net)$type <- bipartite.mapping(arch_net)$type
+```
+
+
+```{r}
+nodelist
+d_arch
 ```
 
 ```{r}
-#range(d$PER_CHG, na.rm = T)
+d_arch <- d_arch %>% select(-Type)
+
 ```
 
 ```{r}
-#install.packages("autoimage")
-library(autoimage)
-#legend.scale(c(-1, 10), col = "viridis")
+d_arch[d_arch$SOCNAME == "Surveying\n&\nMapping\nTechnicians",]
+table(duplicated(d_arch))
 ```
 
-```{r}
 
+```{r, fig.height = 25, fig.width= 25}
+E(arch_net)$color <- colour_values(E(arch_net)$PER_CHG, palette = "viridis")
+plot(arch_net,
+     vertex.size = ifelse(V(arch_net)$type, 2, 9),
+     vertex.shape = ifelse(V(arch_net)$type, "circle", "square"),
+     vertex.color = ifelse(V(arch_net)$type, cbPalette[6], cbPalette[5]),
+     #vertex.color = cbPalette[V(manu_net)$SOC_type],
+     vertex.label = ifelse(V(arch_net)$type == F, V(arch_net)$name, NA),
+     vertex.label.color = "black",
+     vertex.label.cex = 0.5,
+     edge.width = 2,
+     edge.color = E(arch_net)$color,
+     layout = layout_with_kk)
+title("Architecture and Engineering Occupation Network", sub = "data from O*Net OnLine")
+legend("bottomleft", legend = c("Credential", "Occupation"), col = c(cbPalette[6], cbPalette[5]), pch = c(19,15), pt.cex = 1.5, bty = "n", title = "Node Type", xjust = 0)
 ```
+
 
 
 #Construction and Extraction Occupations
 
 ```{r}
 d_const <- d[d$soc_type_name == "Construction\nand\nExtraction\nOccupations",]
+d_const <- d_const %>% select(-Type)
+d_const <- d_const[!duplicated(d_const),]
 
 d_const <- na.omit(d_const)
+
 ```
 
 ```{r}
-d_const
-```
-
-```{r}
-d_const_attr <- d_attributes[d_attributes$soc_type_name == "Construction\nand\nExtraction\nOccupations",]
-```
-
-```{r}
-d_const_attr <- na.omit(d_const_attr)
-```
-
-```{r}
-temp = d_const[which(! d_const$Certification.Name %in% d_const_attr$name),]
-
-temp <- temp %>% select(name = Certification.Name, SOC,
-                           Certifying.Organization = Certifying.Organization,
-                           soc_type_name = soc_type_name, GROWTH, PER_CHG)
-temp$SOC_type <- 47
-temp <- temp %>% select(name, SOC, SOC_type, Certifying.Organization, soc_type_name, GROWTH, PER_CHG)
-
-d_const_attr <- rbind(d_const_attr, temp)
+d_const[d_const$SOCNAME == "Construction\nand\nBuilding\nInspectors",]
 ```
 
 
 ```{r}
-const <- graph.data.frame(d_const, directed = F, vertices = d_const_attr)
-V(const)$type <- bipartite.mapping(const)$type
+const <- graph.data.frame(d_const)
+
+
+nodelist <- data.frame(name = igraph::V(const)$name)
+
+nodelist <- nodelist %>% left_join(d_attributes, by = "name")
+
+const_net <- graph.data.frame(d_const, directed = F, vertices = nodelist)
+V(const_net)$type <- bipartite.mapping(const_net)$type
 ```
+
 
 ```{r, fig.height = 20, fig.width= 20}
-E(const)$color <- colour_values(E(const)$PER_CHG, palette = "viridis")
-plot(const,
-     vertex.size = ifelse(V(const)$type, 2, 13),
-     vertex.shape = ifelse(V(const)$type, "circle", "square"),
-     vertex.color = ifelse(V(const)$type, cbPalette[6], cbPalette[5]),
+E(const_net)$color <- colour_values(E(const_net)$PER_CHG, palette = "viridis")
+plot(const_net,
+     vertex.size = ifelse(V(const_net)$type, 2, 10),
+     vertex.shape = ifelse(V(const_net)$type, "circle", "square"),
+     vertex.color = ifelse(V(const_net)$type, cbPalette[6], cbPalette[5]),
      #vertex.color = cbPalette[V(manu_net)$SOC_type],
-     vertex.label = ifelse(V(const)$type == F, V(const)$name, NA),
+     vertex.label = ifelse(V(const_net)$type == F, V(const_net)$name, NA),
      vertex.label.color = "black",
      vertex.label.cex = 0.5,
      edge.width = 2,
-     edge.color = E(const)$color,
+     edge.color = E(const_net)$color,
      layout = layout_nicely)
 title("Construction and Extraction Occupation Network", sub = "data from O*Net OnLine")
 legend("bottomleft", legend = c("Credential", "Occupation"), col = c(cbPalette[6], cbPalette[5]), pch = c(19,15), pt.cex = 1.5, bty = "n", title = "Node Type", xjust = 0)
 ```
+
+```{r}
+get_network_stats(const)
+```
+
 
 #Installation, Maintenance, and Repair Occupations
 
@@ -429,6 +490,11 @@ plot(rep_net,
 title("Installation, Maintenance, and Repair Occupation Network", sub = "data from O*Net OnLine")
 legend("bottomleft", legend = c("Credential", "Occupation"), col = c(cbPalette[6], cbPalette[5]), pch = c(19,15), pt.cex = 1.5, bty = "n", title = "Node Type", xjust = 0)
 ```
+
+```{r}
+get_network_stats(rep)
+```
+
 
 ```{r}
 d_repair
@@ -479,6 +545,11 @@ title("Production Occupation Network", sub = "data from O*Net OnLine")
 legend("bottomleft", legend = c("Credential", "Occupation"), col = c(cbPalette[6], cbPalette[5]), pch = c(19,15), pt.cex = 1.5, bty = "n", title = "Node Type", xjust = 0)
 ```
 
+```{r}
+get_network_stats(prod)
+```
+
+
 #"Transportation\nand\nMaterial\nMoving\nOccupations"
 
 ```{r}
@@ -512,6 +583,10 @@ plot(trans_net,
      layout = layout_nicely)
 title("Transportation and Material Moving Occupation Network", sub = "data from O*Net OnLine")
 legend("bottomleft", legend = c("Credential", "Occupation"), col = c(cbPalette[6], cbPalette[5]), pch = c(19,15), pt.cex = 1.5, bty = "n", title = "Node Type", xjust = 0)
+```
+
+```{r}
+get_network_stats(trans_net)
 ```
 
 

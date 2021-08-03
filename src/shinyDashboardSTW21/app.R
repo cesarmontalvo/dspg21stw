@@ -400,7 +400,23 @@ server <- function(input, output) {
   }, deleteFile = FALSE)
   
   output$selectedvar1 <- renderText({
-    paste("Network Statistics and comments for", input$network)
+    if (input$network == "Health Sciences"){
+      paste("• Network size: 471 nodes", "\n• Network density (# of edges / # of possible edges): 0.004",
+            "\n• Number of \ncomponents: 20",
+            "\n• Diameter (the greatest distance between any pair of connected vertices): 14")
+    }
+    
+    else if (input$network == "Cybersecurity"){
+      paste("• Network size: 471 nodes", "\n• Network density (# of edges / # of possible edges): 0.004",
+            "\n• Number of \ncomponents: 20",
+            "\n• Diameter (the greatest distance between any pair of connected vertices): 14")
+    }
+    
+    else {
+      paste("• Network Size: 291 nodes", "\n• Network density (# of edges / # of possible edges):  0.007",
+            "\n• Number of components:  22", "\n• Diameter (the greatest distance between any pair of connected vertices):  8")
+    }
+    
   })
   
   
@@ -460,7 +476,45 @@ server <- function(input, output) {
   
   
   output$selectedvar2 <- renderText({
-    paste("Network Statistics and comments for", input$occ_group)
+    if (input$occ_group == "Entire Network"){
+      paste("• Network size: 471 nodes", "\n• Network density (# of edges / # of possible edges): 0.004",
+            "\n• Number of \ncomponents: 20",
+            "\n• Diameter (the greatest distance between any pair of connected vertices): 14")
+    }
+    
+    else if (input$occ_group == "Architecture and Engineering Occupations"){
+      paste("• Network size: 471 nodes", "\n• Network density (# of edges / # of possible edges): 0.004",
+            "\n• Number of \ncomponents: 20",
+            "\n• Diameter (the greatest distance between any pair of connected vertices): 14")
+    }
+    else if (input$occ_group == "Art, Design, Entertainment, Sports, and Media Occupations"){
+      paste("• Network size: 471 nodes", "\n• Network density (# of edges / # of possible edges): 0.004",
+            "\n• Number of \ncomponents: 20",
+            "\n• Diameter (the greatest distance between any pair of connected vertices): 14")
+    }
+    else if (input$occ_group == "Healthcare Practitioners and Technical Occupations"){
+      paste("• Network size: 471 nodes", "\n• Network density (# of edges / # of possible edges): 0.004",
+            "\n• Number of \ncomponents: 20",
+            "\n• Diameter (the greatest distance between any pair of connected vertices): 14")
+    }
+    else if (input$occ_group == "Construction and Extraction Occupations"){
+      paste("•Size:  216 Density:  0.0107665805340224 Number of Components:  7 Diameter:  10")
+    }
+    else if (input$occ_group == "Installation, Maintenance, and Repair Occupations"){
+      paste("• Network size: 471 nodes", "\n• Network density (# of edges / # of possible edges): 0.004",
+            "\n• Number of \ncomponents: 20",
+            "\n• Diameter (the greatest distance between any pair of connected vertices): 14")
+    }
+    else if (input$occ_group == "Production Occupations"){
+      paste("• Network size: 471 nodes", "\n• Network density (# of edges / # of possible edges): 0.004",
+            "\n• Number of \ncomponents: 20",
+            "\n• Diameter (the greatest distance between any pair of connected vertices): 14")
+    }
+    
+    else {
+      paste("• Network Size: 291 nodes", "\n• Network density (# of edges / # of possible edges):  0.007",
+            "\n• Number of components:  22", "\n• Diameter (the greatest distance between any pair of connected vertices):  8")
+    }
   })
 #=======
   

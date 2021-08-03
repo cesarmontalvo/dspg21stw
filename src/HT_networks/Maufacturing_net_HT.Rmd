@@ -139,6 +139,11 @@ legend("bottomleft", legend = c("Credential", "Occupation"), pch = c(19, 15), pt
 ```
 
 ```{r}
+get_network_stats(manu_net)
+```
+
+
+```{r}
 library(ggraph)
 ```
 
