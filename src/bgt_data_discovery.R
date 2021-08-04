@@ -59,6 +59,9 @@ merged <- merge(bgt, stw, by.x = "soc", by.y = "SOC")  # merging on soc variable
 merged_cert <- merge(merged, bgt_cert, by.x = "id", by.y = "id") # merging on id variable 
 bgt_stw_cred <- merged_cert[is.na(merged_cert$certification) == FALSE,] # removing jobs with no certification 
 
+merged_cert$fam <- substr(merged_cert$soc,1,2 )
+
+
 profile <- select(bgt_stw_cred, c(soc, lat, lon, state, certification))
 profile <- profile[is.na(profile$lat) == FALSE,]
 profile <- profile[is.na(profile$state) == FALSE,]
@@ -97,9 +100,10 @@ sumUNI
 sumUNI_precent <- sumUNI/nrow(merged_cert)*100
 sumUNI_precent
 
-duplicated(merged_cert$id)
+merged_cert[duplicated(merged_cert$id)]
 
-
+z <- duplicated(merged_cert$id)
+length(z[z== TRUE])
 
 # SOC Codes 
 SOC_frequencies_US <- table(bgt_profile$soc)

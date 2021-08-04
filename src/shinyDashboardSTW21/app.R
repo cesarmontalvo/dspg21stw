@@ -35,7 +35,7 @@ ui <- fluidPage(
                         DSPG young scholars conduct research at the intersection of statistics, computation, and the social sciences to determine how information
                         generated within every community can be leveraged to improve quality of life and inform public policy. ", style = "color:#232D4B"),
                       h5("DSPG21STW Summer Project"),
-                      p("Employment in the Skilled Technical Workforce (STW) requires a high level of knowledge in a technical domain and does not require a bachelor’s degree for entry.  These jobs are important because they provide a path to the middle class, and they foster US innovation and shared prosperity through having a workforce with a diverse technical skillset.  By 2022, the US will have 2.4 million unfilled STW jobs.  This summer, our goal was to create a list of nondegree credentials for jobs in the STW."),
+                      p("Employment in the Skilled Technical Workforce (STW) requires a high level of knowledge in a technical domain and does not require a bachelor’s degree for entry. These jobs are important because they provide a path to the middle class, and they foster US innovation and shared prosperity through having a workforce with a diverse technical skillset. By 2022, the US will have 2.4 million unfilled STW jobs. This summer we had two goals, the first was to create a list of certifications for STW occupations that could be used to normalize the certifications in other data sources such as job-ads, surveys, and state and local administrative data. The second goal was to begin to explore the portability of STW certifications. During the 10-week DSPG program, the STW team documented data sources to create a normalized certification dataset for STW jobs. We used text matching to compare this dataset with certifications from job ads and Virginia industry approved certifications and analyzed certification portability through network analysis"),
                       
                       p("During the 10-week DSPG program, the STW team documented data sources to create a normalized dataset for STW jobs.  We used text matching to compare this data with job ads data and analyzed credential portability through network analysis."),
                       
@@ -53,8 +53,10 @@ ui <- fluidPage(
              navbarMenu("Profiling",
                         
                         tabPanel("Certifications and Occupations", style = "margin:20px",
-                                 h5("Visuals"),
-                                 p(style = "margin-top:25px","In this graph we show the top burning glass certifications for each SOC Occupation Family. We removed drivers license as a credential. " ),
+
+                                 h5("Top Certifications"),
+                                 p(style = "margin-top:25px","This figure shows the top 30 Burning Glass Technology Certifications for each SOC Occupation family in the Skilled Technical Workforce. Two types of credentials were removed from the analysis: driver’s license, including the type CDL Class A, B, C and D; and credentials identified as security clearance.  These two types of information refer to requisites for job applications rather than certifications accredited by an academic institution." ),
+
                                  br(),
                                  br(),
                                  br(),
@@ -82,20 +84,20 @@ ui <- fluidPage(
                                  )
                                  
                         ),
-                        
+                         
                         tabPanel("Profiles", style = "margin:60px",
                                  h5("Profiling", align = "center"),
-                                 p(style = "margin-top:25px","Our first task was to profile the Burning Glass Technologies data in order to get a better understanding of the data we would be working with. We looked primarily at metrics like data completeness, uniqueness, and interesting metrics for columns SOC code and Certification. Completeness is simply a percentage of how complete the data was. Uniqueness can be defined as the number of distinct entries for each of the variables.In this Data Discovery we are looking at 3 data sets, BGT_Main, BGT_CERT, and STW.BGT_MAIN is a data set of 33,859,698 rows, we pulled specifically for the variables" ),
+                                 p(style = "margin-top:25px","The first task was to profile the Burning Glass Technologies (BGT) data in order to get a better understanding of this information. BGT has a large number of variables and this profiling selected 7 variables, including, job identification, Standard Occupational Classification code, latitude, longitude, state, name of occupation and certification.We included three metrics for data completeness, uniqueness, and duplicates. Completeness is the percentage indicating how complete the data was. Uniqueness is defined as the number of distinct entries for each of the variables. In this Data Discovery, we explored 3 data sets (BGT_Main, BGT_CERT, and STW.BGT_MAIN) containing 33,859,698 rows of information corresponding to job ads." ),
                                  br(),
-                                 p("Before we evaluate completeness and uniqueness of variables, we had to do some manipulation to the data set. In order to successfully filter for STW jobs down the line we needed to remove job-ads from BGT_MAIN that did not have a soc code. This decreased the size of the original data set from 33,859,698 to 32,488,447, removing 1,371,251 rows. Next, we had to remove “-” from SOC variable and make SOC codes integers in both the BGT_MAIN and STW data sets. We were then able to merge the data by matching on the SOC variable, so that the data only contained job-ads that were in the STW. This decreased our data set down to 2,234,115 rows. This shows that 6.9% of the bgt job ads with soc codes are in the STW. Next, we needed add in certification data. We merged BGT_MAIN and BGT_CERT on the jobid variable. This decreased our data set to 1,173,772, indicating that out of the job ads within STW 52.5% have credentials listed."),
+                                 p("Before we evaluate completeness and uniqueness of variables, we had to do some manipulation to the data set. To successfully filter for STW jobs down the line, we needed to remove job-ads from BGT_MAIN that did not have a soc code. This decreased the size of the original data set from 33,859,698 to 32,488,447, removing 1,371,251 rows. Next, we had to remove “-” from SOC variable and make SOC codes integers in both the BGT_MAIN and STW data sets. We were then able to merge the data by matching on the SOC variable, so that the data only contained job-ads that were in the STW. This decreased our data set down to 2,234,115 rows. This shows that 6.9% of the BGT job ads with soc codes are in the STW. Next, we needed add in certification data. We merged BGT_MAIN and BGT_CERT using the job id variable. This decreased our data set to 1,173,772, indicating that 52.5% of STW job ads have credentials listed."),
                                  sidebarLayout(
                                    sidebarPanel(
                                      width = 6,
-                                     selectInput("selectTable", "Select", choices = c("Completeness, Uniqueness, Duplicates", "Validity")),
+                                     selectInput("selectTable", "Select", choices = c("Completeness, Uniqueness, Duplicates")),
                                      h4("Definitions: ", style = "margin-top:50px"),
                                      helpText("Note: All definitions are provided by Dow Jones Developer Platform"),
                                      tags$ul(
-                                       tags$li("soc code: SOC code of the job assigned using BGT occupation coding rules. SOC codes are always the first 6- digits of a job’s O*NET code. We use SOCs based off of the most recent 2010 SOC delineations."),
+                                       tags$li("soc code: SOC code of the job assigned using BGT occupation coding rules. SOC codes are always the first 6- digits of a job’s O*NET code. We use SOCs based off of the most recent 2010 SOC delineations.The Standard Occupational Classification (SOC) system is a standard used by federal agencies to classify workers into occupational categories. As of 2018, there are 867 occupations within 23 major groups. Link to source: https://www.bls.gov/soc/"),
                                        tags$li("Latitude: Latitude for the Canonicalized Location."),
                                        tags$li("Longitude: Longitude for the Canonicalized Location."),
                                        tags$li("Fipsstate: FIPS is a 5-digit code, representing the concatenation of the state + county FIPS codes. Ex. 29019 is the FIPS code for Boone County, MO, where the first 2-digits, 29, represent MO, and the last 3-digits, 019, represent Boone County in MO."),
@@ -297,14 +299,9 @@ server <- function(input, output) {
   })
   
   output$tables <- renderTable({
-    if(input$selectTable == "Validity"){
+    if(input$selectTable == "Completeness, Uniqueness, Duplicates"){
       
       
-      valid <- read.csv("validitytable.csv")
-      names(valid)[names(valid) == "X"] <- "Column Name"
-      
-      valid
-    }else{
       profTable <- read.csv("profilingTable.csv")
       
       names(profTable)[names(profTable) == "X"] <- "Column Name"
