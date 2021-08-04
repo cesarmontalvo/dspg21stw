@@ -22,6 +22,17 @@ ui <- fluidPage(
                         column(3, tags$img(height = "80%", width = "80%", src = "partnerlogos.png", align = "right"))
                       ),
                       
+                      h5("DSPG21STW Summer Project"),
+                      p("Employment in the Skilled Technical Workforce (STW) requires a high level of knowledge in a technical domain and does not require a bachelor’s degree for entry. These jobs are important because they provide a path to the middle class, and they foster US innovation and shared prosperity through having a workforce with a diverse technical skillset. By 2022, the US will have 2.4 million unfilled STW jobs. This summer we had two goals, the first was to create a list of certifications for STW occupations that could be used to normalize the certifications in other data sources such as job-ads, surveys, and state and local administrative data. The second goal was to begin to explore the portability of STW certifications. During the 10-week DSPG program, the STW team documented data sources to create a normalized certification dataset for STW jobs. We used text matching to compare this dataset with certifications from job ads and Virginia industry approved certifications and analyzed certification portability through network analysis"),
+                      
+                      p("During the 10-week DSPG program, the STW team documented data sources to create a normalized dataset for STW jobs.  We used text matching to compare this data with job ads data and analyzed credential portability through network analysis."),
+                      
+                      h5("Our Team"),
+                      
+                      
+                      p("SDAD: Vicki Lancaster and Cesar Montalvo"),
+                      p("DSPG: Emily Kurtz (Fellow), Haleigh Tomlin (Intern), Madeline Garrett (Intern)"),
+                      p("Sponsor: Gigi Jones, National Science Foundation (NSF), National Center for Science and Engineering (NCSES)"),
                       h5("SDAD/DSPG"),
                       p("The Social and Decision Analytics Division (SDAD) is one of three research divisions within the Biocomplexity Institute and Initiative at the University of Virginia.
                         SDAD combines expertise in statistics and social and behavioral sciences to develop evidence-based research
@@ -33,94 +44,42 @@ ui <- fluidPage(
                       p("The Data Science for the Public Good (DSPG) Young Scholars program is a summer immersive program held at SDAD. Entering its eighth year, the program engages students from across the country
                         to work together on projects that address state, federal, and local government challenges around critical social issues relevant in the world today.
                         DSPG young scholars conduct research at the intersection of statistics, computation, and the social sciences to determine how information
-                        generated within every community can be leveraged to improve quality of life and inform public policy. ", style = "color:#232D4B"),
-                      h5("DSPG21STW Summer Project"),
-                      p("Employment in the Skilled Technical Workforce (STW) requires a high level of knowledge in a technical domain and does not require a bachelor’s degree for entry. These jobs are important because they provide a path to the middle class, and they foster US innovation and shared prosperity through having a workforce with a diverse technical skillset. By 2022, the US will have 2.4 million unfilled STW jobs. This summer we had two goals, the first was to create a list of certifications for STW occupations that could be used to normalize the certifications in other data sources such as job-ads, surveys, and state and local administrative data. The second goal was to begin to explore the portability of STW certifications. During the 10-week DSPG program, the STW team documented data sources to create a normalized certification dataset for STW jobs. We used text matching to compare this dataset with certifications from job ads and Virginia industry approved certifications and analyzed certification portability through network analysis"),
+                        generated within every community can be leveraged to improve quality of life and inform public policy. ", style = "color:#232D4B")
                       
-                      p("During the 10-week DSPG program, the STW team documented data sources to create a normalized dataset for STW jobs.  We used text matching to compare this data with job ads data and analyzed credential portability through network analysis."),
-                      
-                      h5("Our Team"),
-                      
-                      
-                      p("SDAD: Vicki Lancaster and Cesar Montalvo"),
-                      p("DSPG: Emily Kurtz (Fellow), Haleigh Tomlin (Intern), Madeline Garrett (Intern)"),
-                      p("Sponsor: Gigi Jones, National Science Foundation (NSF), National Center for Science and Engineering (NCSES)")
                       
                       
              ),
              
-             #ui
-             navbarMenu("Profiling",
-                        
-                        tabPanel("Certifications and Occupations", style = "margin:20px",
-
-                                 h5("Top Certifications"),
-                                 p(style = "margin-top:25px","This figure shows the top 30 Burning Glass Technology Certifications for each SOC Occupation family in the Skilled Technical Workforce. Two types of credentials were removed from the analysis: driver’s license, including the type CDL Class A, B, C and D; and credentials identified as security clearance.  These two types of information refer to requisites for job applications rather than certifications accredited by an academic institution." ),
-
-                                 br(),
-                                 br(),
-                                 br(),
-                                 sidebarLayout(
-                                   sidebarPanel(
-                                     h4("Top Certifications for each Occupation Family"),
-                                     selectInput("family", "Occupation Family", choices = list(
-                                       'Management' = '11' ,
-                                       'Business and Financial Operations' = '13' ,
-                                       'Architecture and Engineering' = '17' ,
-                                       'Life, Physical, and Social Science' = "19" ,
-                                       'Arts, Design, Entertainment, Sports, and Media' = "27" ,
-                                       'Healthcare Practitioners and Technical' = "29" ,
-                                       'Protective Service' = "33" ,
-                                       'Food Preparation and Serving Related' = "35" ,
-                                       'Office and Administrative Support' = "43" ,
-                                       'Farming, Fishing, and Forestry' = "45" ,
-                                       'Construction and Extraction' = "47" ,
-                                       'Installation, Maintenance, and Repair' = "49" ,
-                                       'Production' = "51" ,
-                                       'Transportation and Material Moving' = "53"
-                                     ))),
-                                   mainPanel(
-                                     plotlyOutput('plot_20top_certificates' , width = "auto" ,  height = "700"))
-                                 )
-                                 
-                        ),
-                         
-                        tabPanel("Profiles", style = "margin:60px",
-                                 h5("Profiling", align = "center"),
-                                 p(style = "margin-top:25px","The first task was to profile the Burning Glass Technologies (BGT) data in order to get a better understanding of this information. BGT has a large number of variables and this profiling selected 7 variables, including, job identification, Standard Occupational Classification code, latitude, longitude, state, name of occupation and certification.We included three metrics for data completeness, uniqueness, and duplicates. Completeness is the percentage indicating how complete the data was. Uniqueness is defined as the number of distinct entries for each of the variables. In this Data Discovery, we explored 3 data sets (BGT_Main, BGT_CERT, and STW.BGT_MAIN) containing 33,859,698 rows of information corresponding to job ads." ),
-                                 br(),
-                                 p("Before we evaluate completeness and uniqueness of variables, we had to do some manipulation to the data set. To successfully filter for STW jobs down the line, we needed to remove job-ads from BGT_MAIN that did not have a soc code. This decreased the size of the original data set from 33,859,698 to 32,488,447, removing 1,371,251 rows. Next, we had to remove “-” from SOC variable and make SOC codes integers in both the BGT_MAIN and STW data sets. We were then able to merge the data by matching on the SOC variable, so that the data only contained job-ads that were in the STW. This decreased our data set down to 2,234,115 rows. This shows that 6.9% of the BGT job ads with soc codes are in the STW. Next, we needed add in certification data. We merged BGT_MAIN and BGT_CERT using the job id variable. This decreased our data set to 1,173,772, indicating that 52.5% of STW job ads have credentials listed."),
-                                 sidebarLayout(
-                                   sidebarPanel(
-                                     width = 6,
-                                     selectInput("selectTable", "Select", choices = c("Completeness, Uniqueness, Duplicates")),
-                                     h4("Definitions: ", style = "margin-top:50px"),
-                                     helpText("Note: All definitions are provided by Dow Jones Developer Platform"),
-                                     tags$ul(
-                                       tags$li("soc code: SOC code of the job assigned using BGT occupation coding rules. SOC codes are always the first 6- digits of a job’s O*NET code. We use SOCs based off of the most recent 2010 SOC delineations.The Standard Occupational Classification (SOC) system is a standard used by federal agencies to classify workers into occupational categories. As of 2018, there are 867 occupations within 23 major groups. Link to source: https://www.bls.gov/soc/"),
-                                       tags$li("Latitude: Latitude for the Canonicalized Location."),
-                                       tags$li("Longitude: Longitude for the Canonicalized Location."),
-                                       tags$li("Fipsstate: FIPS is a 5-digit code, representing the concatenation of the state + county FIPS codes. Ex. 29019 is the FIPS code for Boone County, MO, where the first 2-digits, 29, represent MO, and the last 3-digits, 019, represent Boone County in MO."),
-                                       tags$li("Jobid: A unique ID generated by Burning Glass. BGTJobId is used to link this table with both the main table, and subsequent tables. "),
-                                       tags$li("Certification: Certification is a standardized version of the certifications listed in the posting to enable improved search and categorization.Note that there may be multiple certifications per job posting (or, alternatively, none at all). As such, the data in this table is presented vertically, where each certification for a particular job posting will be in its own row, with the job posting’s BGTJobId in its own column to the left of each certification, identifying which job posting each certification came from. "),
-                                       tags$li("Name: Name of the occupation associated with a given SOC Code ")
-                                     )
-                                     
-                                   ),
-                                   mainPanel(width = 3, tableOutput("tables"))
-                                 ))
+             tabPanel("Data Sources",style = "margin:45px",
+                       fluidRow(
+                         #column(3, tags$img(height = "80%", width = "80%", src = "biilogo.png")),
+                         column(6, h1("Data Sources")),
+                         column(3, tags$img(height = "80%", width = "80%", src = "partnerlogos.png", align = "right"))
+                       ),
+                      
+                      
+                      fluidRow(style = "margin-top:100px",
+                               column(3, h5("Burning Glass Technologies")),
+                               column(6, wellPanel(p(style = "font-size:15px","The Burning Glass Technologies delivers job market analytics that empower employers, workers and educators to make data-driven decisions. The company’s artificial intelligence technology analyzes hundreds of millions of job postings and real-life career transitions to provide insight into workforce demand patterns. This real-time strategic intelligence offers crucial insights, such as which jobs are most in demand, the specific skills employers need and the career directions that offer the highest potential for workers. For more information, visit burning-glass.com. ")))
+                      ),
+                      hr(),
+                      fluidRow(style = "margin-top:100px",
+                               column(3, h5("Occupation Information Network (O*NET)")),
+                               column(6, wellPanel(p(style = "font-size:15px","ONET Data was webscraped from the Occupational Information Network. O*NET Data descriptors are categories of occupational information collected and available for O*NET-SOC occupations. Each descriptor contains more specific elements with data ratings.")))
+                      )
+                      
+                      
+                      
+                      
+                      
              ),
-             #end profiling tab------------------------------------------
              
-             
-             
-             
-             
-             tabPanel("Methods",
-                      #h3("Methods", align = "center", style = "margin-bottom: 50px"),
-                      style = "margin-left: 120px;",
-                      style = "margin-top: 30px;",
-                      style = "margin-right: 120px;",
+             tabPanel("Methods",style = "margin:45px",
+                      fluidRow(
+                        #column(3, tags$img(height = "80%", width = "80%", src = "biilogo.png")),
+                        column(6, h1("Methods")),
+                        column(3, tags$img(height = "80%", width = "80%", src = "partnerlogos.png", align = "right"))
+                      ),
                       
                       
                       fluidRow(style = "margin-top:100px",
@@ -148,10 +107,88 @@ ui <- fluidPage(
                       
              ),#),#end navbar
              
+             #ui
+             #navbarMenu("Data Profiling",
+                        
+
+                         
+                        tabPanel("Data Profiling", style = "margin:60px",
+                                 fluidRow(
+                                   #column(3, tags$img(height = "80%", width = "80%", src = "biilogo.png")),
+                                   column(6, h1("Data Profiling")),
+                                   column(3, tags$img(height = "80%", width = "80%", src = "partnerlogos.png", align = "right"))
+                                 ),
+                                 
+                                 
+                                 #h5("Profiling", align = "center"),
+                                 p(style = "margin-top:25px","The first task was to profile the Burning Glass Technologies (BGT) data in order to get a better understanding of this information. BGT has a large number of variables and this profiling selected 7 variables, including, job identification, Standard Occupational Classification code, latitude, longitude, state, name of occupation and certification.We included three metrics for data completeness, uniqueness, and duplicates. Completeness is the percentage indicating how complete the data was. Uniqueness is defined as the number of distinct entries for each of the variables. In this Data Discovery, we explored 3 data sets (BGT_Main, BGT_CERT, and STW.BGT_MAIN) containing 33,859,698 rows of information corresponding to job ads." ),
+                                 br(),
+                                 p("Before we evaluate completeness and uniqueness of variables, we had to do some manipulation to the data set. To successfully filter for STW jobs down the line, we needed to remove job-ads from BGT_MAIN that did not have a soc code. This decreased the size of the original data set from 33,859,698 to 32,488,447, removing 1,371,251 rows. Next, we had to remove “-” from SOC variable and make SOC codes integers in both the BGT_MAIN and STW data sets. We were then able to merge the data by matching on the SOC variable, so that the data only contained job-ads that were in the STW. This decreased our data set down to 2,234,115 rows. This shows that 6.9% of the BGT job ads with soc codes are in the STW. Next, we needed add in certification data. We merged BGT_MAIN and BGT_CERT using the job id variable. This decreased our data set to 1,173,772, indicating that 52.5% of STW job ads have credentials listed."),
+                                 sidebarLayout(
+                                   sidebarPanel(
+                                     width = 6,
+                                     selectInput("selectTable", "Select", choices = c("Completeness, Uniqueness, Duplicates")),
+                                     h4("Definitions: ", style = "margin-top:50px"),
+                                     helpText("Note: All definitions are provided by Dow Jones Developer Platform"),
+                                     tags$ul(
+                                       tags$li("soc code: SOC code of the job assigned using BGT occupation coding rules. SOC codes are always the first 6- digits of a job’s O*NET code. We use SOCs based off of the most recent 2010 SOC delineations.The Standard Occupational Classification (SOC) system is a standard used by federal agencies to classify workers into occupational categories. As of 2018, there are 867 occupations within 23 major groups. Link to source: https://www.bls.gov/soc/"),
+                                       tags$li("Latitude: Latitude for the Canonicalized Location."),
+                                       tags$li("Longitude: Longitude for the Canonicalized Location."),
+                                       tags$li("Fipsstate: FIPS is a 5-digit code, representing the concatenation of the state + county FIPS codes. Ex. 29019 is the FIPS code for Boone County, MO, where the first 2-digits, 29, represent MO, and the last 3-digits, 019, represent Boone County in MO."),
+                                       tags$li("Jobid: A unique ID generated by Burning Glass. BGTJobId is used to link this table with both the main table, and subsequent tables. "),
+                                       tags$li("Certification: Certification is a standardized version of the certifications listed in the posting to enable improved search and categorization.Note that there may be multiple certifications per job posting (or, alternatively, none at all). As such, the data in this table is presented vertically, where each certification for a particular job posting will be in its own row, with the job posting’s BGTJobId in its own column to the left of each certification, identifying which job posting each certification came from. "),
+                                       tags$li("Name: Name of the occupation associated with a given SOC Code ")
+                                     )
+                                     
+                                   ),
+                                   mainPanel(width = 3, tableOutput("tables"))
+                                 )),
+             #),
+             #end profiling tab------------------------------------------
+             
+             
+             
+             
+             
+
+             
              #end Data Sources and Methods tabs-----------------
              
              
              navbarMenu("Results",
+                        tabPanel("Certifications and Occupations", style = "margin:20px",
+                                 
+                                 h5("Top Certifications"),
+                                 p(style = "margin-top:25px","This figure shows the top 30 Burning Glass Technology Certifications for each SOC Occupation family in the Skilled Technical Workforce. Two types of credentials were removed from the analysis: driver’s license, including the type CDL Class A, B, C and D; and credentials identified as security clearance.  These two types of information refer to requisites for job applications rather than certifications accredited by an academic institution." ),
+                                 
+                                 br(),
+                                 br(),
+                                 br(),
+                                 sidebarLayout(
+                                   sidebarPanel(
+                                     h4("Top Certifications for each Occupation Family"),
+                                     selectInput("family", "Occupation Family", choices = list(
+                                       'Management' = '11' ,
+                                       'Business and Financial Operations' = '13' ,
+                                       'Architecture and Engineering' = '17' ,
+                                       'Life, Physical, and Social Science' = "19" ,
+                                       'Arts, Design, Entertainment, Sports, and Media' = "27" ,
+                                       'Healthcare Practitioners and Technical' = "29" ,
+                                       'Protective Service' = "33" ,
+                                       'Food Preparation and Serving Related' = "35" ,
+                                       'Office and Administrative Support' = "43" ,
+                                       'Farming, Fishing, and Forestry' = "45" ,
+                                       'Construction and Extraction' = "47" ,
+                                       'Installation, Maintenance, and Repair' = "49" ,
+                                       'Production' = "51" ,
+                                       'Transportation and Material Moving' = "53"
+                                     ))),
+                                   mainPanel(
+                                     plotlyOutput('plot_20top_certificates' , width = "auto" ,  height = "700"))
+                                 )
+                                 
+                        ),
+                        
                         tabPanel("Credential Matching",
                                  h5("Credential Matching Across Data Sources"),
                                  p("We used three main data sources in our project. These sources represented the three main players in the training and employing of STW workers. First, the O*NET data, coming from the U.S. Government's Bureau of Labor Statistics, represented government entities. Second, the Burning Glass data, pulling job ads from employers, represented industries. Finally, the Virginia Community College data set represented educational institutions."),
@@ -229,31 +266,10 @@ ui <- fluidPage(
                                    )))#end results tab 
 
                         
-             ), #end navbarPage
+             ) #end navbarPage
              
              
-             tabPanel("Data Sources",
-                      #h3("Methods", align = "center", style = "margin-bottom: 50px"),
-                      style = "margin-left: 120px;",
-                      style = "margin-top: 30px;",
-                      style = "margin-right: 120px;",
-                      
-                      
-                      fluidRow(style = "margin-top:100px",
-                               column(3, h5("Burning Glass Technologies")),
-                               column(6, wellPanel(p(style = "font-size:15px","The Burning Glass Technologies delivers job market analytics that empower employers, workers and educators to make data-driven decisions. The company’s artificial intelligence technology analyzes hundreds of millions of job postings and real-life career transitions to provide insight into workforce demand patterns. This real-time strategic intelligence offers crucial insights, such as which jobs are most in demand, the specific skills employers need and the career directions that offer the highest potential for workers. For more information, visit burning-glass.com. ")))
-                      ),
-                      hr(),
-                      fluidRow(style = "margin-top:100px",
-                               column(3, h5("Occupation Information Network (O*NET)")),
-                               column(6, wellPanel(p(style = "font-size:15px","ONET Data was webscraped from the Occupational Information Network. O*NET Data descriptors are categories of occupational information collected and available for O*NET-SOC occupations. Each descriptor contains more specific elements with data ratings.")))
-                      ),
-
-                      
-                      
-                      
-                      
-             ))) #end fluid page
+)) #end fluid page
 
 
 
