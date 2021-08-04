@@ -54,7 +54,7 @@ ui <- fluidPage(
                         
                         tabPanel("Certifications and Occupations", style = "margin:20px",
                                  h5("Visuals"),
-                                 p(style = "margin-top:25px","In this graph we show the top burning glass certifications for each SOC Occupation Family. We removed drivers license as a credential. Blah blah blah, will have to fill this in." ),
+                                 p(style = "margin-top:25px","In this graph we show the top burning glass certifications for each SOC Occupation Family. We removed drivers license as a credential. " ),
                                  br(),
                                  br(),
                                  br(),
@@ -367,15 +367,15 @@ server <- function(input, output) {
   
   output$selectedvar1 <- renderUI({
     if (input$network == "Health Sciences"){
-      HTML("<ul><li>Network size: 471 nodes</li><li>Network density (# of edges / # of possible edges): 0.004</li><li>Number of components: 20</li><li>Diameter (the greatest distance between any pair of connected vertices): 14</li></ul>")
+      HTML("<ul><li>Network size: 485 nodes</li><li>Network density (# of edges / # of possible edges): 0.004</li><li>Number of components: 14</li><li>Diameter (the greatest distance between any pair of connected vertices): 10</li></ul>")
     }
     
     else if (input$network == "Cybersecurity"){
-      HTML("<ul><li>Network size: 471 nodes</li><li>Network density (# of edges / # of possible edges): 0.004</li><li>Number of components: 20</li><li>Diameter (the greatest distance between any pair of connected vertices): 14</li></ul>")
+      HTML("<ul><li>Network size: 722 nodes</li><li>Network density (# of edges / # of possible edges): 0.003</li><li>Number of components: 2</li><li>Diameter (the greatest distance between any pair of connected vertices): 10</li></ul>")
     }
     
     else {
-      HTML("<ul><li>Network size: 471 nodes</li><li>Network density (# of edges / # of possible edges): 0.004</li><li>Number of components: 20</li><li>Diameter (the greatest distance between any pair of connected vertices): 14</li></ul>")
+      HTML("<ul><li>Network size: 294 nodes</li><li>Network density (# of edges / # of possible edges): 0.007</li><li>Number of components: 23</li><li>Diameter (the greatest distance between any pair of connected vertices): 8</li></ul>")
     }
     
   })
@@ -394,8 +394,8 @@ server <- function(input, output) {
     # Return a list containing the filename and alt text
     list(src = filename,
          alt = paste(input$occ_group, "Network"),
-         width = 800,
-         height = 800)})
+         width = 900,
+         height = 900)})
   
   
   #=======
@@ -423,30 +423,30 @@ server <- function(input, output) {
   
   output$selectedvar2 <- renderUI({
     if (input$occ_group == "Entire Network"){
-      HTML("<ul><li>Network size: 471 nodes</li><li>Network density (# of edges / # of possible edges): 0.004</li><li>Number of components: 20</li><li>Diameter (the greatest distance between any pair of connected vertices): 14</li></ul>")
+      HTML("<ul><li>Network size: 1054 nodes</li><li>Network density (# of edges / # of possible edges): 0.002</li><li>Number of components: 50</li><li>Diameter (the greatest distance between any pair of connected vertices): 21</li></ul>")
     }
     
     else if (input$occ_group == "Architecture and Engineering Occupations"){
-      HTML("<ul><li>Network size: 471 nodes</li><li>Network density (# of edges / # of possible edges): 0.004</li><li>Number of components: 20</li><li>Diameter (the greatest distance between any pair of connected vertices): 14")
+      HTML("<ul><li>Network size: 120 nodes</li><li>Network density (# of edges / # of possible edges): 0.018</li><li>Number of components: 6</li><li>Diameter (the greatest distance between any pair of connected vertices): 6")
     }
     else if (input$occ_group == "Art, Design, Entertainment, Sports, and Media Occupations"){
-      HTML("<ul><li>Network size: 471 nodes</li><li>Network density (# of edges / # of possible edges): 0.004</li><li>Number of components: 20</li><li>Diameter (the greatest distance between any pair of connected vertices): 14")
+      HTML("<ul><li>Network size: 64 nodes</li><li>Network density (# of edges / # of possible edges): 0.03</li><li>Number of components: 5</li><li>Diameter (the greatest distance between any pair of connected vertices): 4")
     }
     else if (input$occ_group == "Healthcare Practitioners and Technical Occupations"){
-      HTML("<ul><li>Network size: 471 nodes</li><li>Network density (# of edges / # of possible edges): 0.004</li><li>Number of components: 20</li><li>Diameter (the greatest distance between any pair of connected vertices): 14")
+      HTML("<ul><li>Network size: 31 nodes</li><li>Network density (# of edges / # of possible edges): 0.062</li><li>Number of components: 4</li><li>Diameter (the greatest distance between any pair of connected vertices): 3")
     }
     else if (input$occ_group == "Construction and Extraction Occupations"){
-      HTML("<ul><li>Network size: 471 nodes</li><li>Network density (# of edges / # of possible edges): 0.004</li><li>Number of components: 20</li><li>Diameter (the greatest distance between any pair of connected vertices): 14")
+      HTML("<ul><li>Network size: 216 nodes</li><li>Network density (# of edges / # of possible edges): 0.005</li><li>Number of components: 7</li><li>Diameter (the greatest distance between any pair of connected vertices): 1")
     }
     else if (input$occ_group == "Installation, Maintenance, and Repair Occupations"){
-      HTML("<ul><li>Network size: 471 nodes</li><li>Network density (# of edges / # of possible edges): 0.004</li><li>Number of components: 20</li><li>Diameter (the greatest distance between any pair of connected vertices): 14")
+      HTML("<ul><li>Network size: 345 nodes</li><li>Network density (# of edges / # of possible edges): 0.003</li><li>Number of components: 18</li><li>Diameter (the greatest distance between any pair of connected vertices): 1")
     }
     else if (input$occ_group == "Production Occupations"){
-      HTML("<ul><li>Network size: 471 nodes</li><li>Network density (# of edges / # of possible edges): 0.004</li><li>Number of components: 20</li><li>Diameter (the greatest distance between any pair of connected vertices): 14")
+      HTML("<ul><li>Network size: 85 nodes</li><li>Network density (# of edges / # of possible edges): 0.023</li><li>Number of components: 11</li><li>Diameter (the greatest distance between any pair of connected vertices): 4")
     }
     
     else {
-      HTML("<ul><li>Network size: 471 nodes</li><li>Network density (# of edges / # of possible edges): 0.004</li><li>Number of components: 20</li><li>Diameter (the greatest distance between any pair of connected vertices): 14")
+      HTML("<ul><li>Network size: 55 nodes</li><li>Network density (# of edges / # of possible edges): 0.034</li><li>Number of components: 4</li><li>Diameter (the greatest distance between any pair of connected vertices): 2")
     }
   })
   #=======
