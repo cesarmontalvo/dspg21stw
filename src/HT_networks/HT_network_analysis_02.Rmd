@@ -177,6 +177,8 @@ d_attributes2 <- d_attributes2[!duplicated(d_attributes2$name),]
 
 d_attributes <- rbind(d_attributes1, d_attributes2)
 
+d <- d %>% select(-c(Type, Certifying.Organization))
+
 d <- d[!duplicated(d),]
 ```
 
@@ -197,68 +199,7 @@ V(stw_network)$type <- bipartite.mapping(stw_network)$type
 stw_network.pr <- bipartite.projection(stw_network)
 ```
 
-## Cybersecurity Only
 
-```{r}
-cyber <- read_xlsx("Cyber.xlsx")
-```
-
-```{r}
-cybermat_attributes1 <- cyber %>% select(name = ONETSOCTITLE, STW, Level, InDemand)
-cybermat_attributes2 <- cyber %>% select(name = Certification, STW, Level, InDemand)
-cybermat_attributes1 <- cybermat_attributes1[!duplicated(cybermat_attributes1$name),]
-cybermat_attributes2 <- cybermat_attributes2[!duplicated(cybermat_attributes2$name),]
-cybermat_attributes <- rbind(cybermat_attributes1, cybermat_attributes2)
-cybermat_attributes <- cybermat_attributes[!duplicated(cybermat_attributes$name),]
-
-cybermat_attributes <- cybermat_attributes %>% mutate(socname = case_when(name == "Forensic Science Technicians" ~ "Forensic\nScience\nTechnicians",
-                                                                          name == "Network and Computer Systems Administrators" ~ "Network\nand Computer\nSystems\nAdministrators",
-                                                                          name == "Information Security Analysts" ~ "Information\nSecurity\nAnalysts",
-                                                                          name == "Computer Systems Analysts" ~ "Computer\nSystems\nAnalysts",
-                                                                          name == "Software Developer" ~ "Software\nDeveloper",
-                                                                          name == "Software Quality Assurance Analysts and Testers"~ "Software\nQuality\nAssurance\nAnalysts\nand Testers",
-                                                                          name == "Computer Programmers" ~ "Computer\nProgrammers",
-                                                                          name == "Information Technology Project Managers" ~ "Information\nTechnology\nProject\nManagers",
-                                                                          name == "Computer and Information Systems Managers" ~ "Computer\nand\nInformation\nSystems\nManagers",
-                                                                          name == "Computer User Support Specialists" ~ "Computer\nUser\nSupport\nSpecialists",
-                                                                          name == "Computer Network Support Specialists" ~ "Computer\nNetwork\nSupport\nSpecialists",
-                                                                          name == "Electrical and Electronic Engineering Technologists and Technicians" ~ "Electronic\nEngineering\nTechnicians",
-                                                                          name == "Information Security Engineers" ~ "Information\nSecurity\nEngineers",
-                                                                          name == "Intelligence Analyst" ~ "Intelligence\nAnalyst",
-                                                                          name == "Detectives and Criminal Investigators" ~ "Detectives\nand Criminal\nInvestigators",
-                                                                          name == "Police Identification and Records Officers" ~ "Police\nIdentification\nand Records\nOfficers"))
-
-cyber <- cyber[!duplicated(cyber[1:2]),]
-
-cyber <- cyber %>% select(ONETSOCTITLE, Certification, STW, Origin, Certifier, Level, InDemand)
-```
-
-
-
-
-
-## Health Sciences
-
-
-#creating a graph of only the nursing credentials
-
-```{r nurse graph, fig.height = 20, fig.width = 20}
-plot(nurse_net,
-     vertex.shape = ifelse(V(nurse_net)$type, "circle", "square"),
-     vertex.color = ifelse(V(nurse_net)$type, cbPalette[4], cbPalette[5]),
-     vertex.size = ifelse(V(nurse_net)$type, 5, 15),
-     vertex.label = ifelse(V(nurse_net)$type == F, V(nurse_net)$socname, V(nurse_net)$name),
-     vertex.label.color = "black",
-     vertex.label.dist = ifelse(V(nurse_net)$type, -.75, 0),
-     vertex.label.cex = ifelse(V(nurse_net)$type, .75, 1),
-     edge.color = cbPalette.blk[1],
-     edge.width = 1.5)
-title(main = "Nursing Credential and Occupation Network", sub = "data from O*Net OnLine")
-legend("bottomleft", legend = c("Credential", "Occupation"), col = c(cbPalette[4], cbPalette[5]), pch = c(19,15), pt.cex = 1.5, bty = "n", title = "Node Type", xjust = 0)
-```
-
-
-## Repeat the above method to subset to any type of occupation using SOC_type or some other detail
 
 
 
@@ -269,93 +210,26 @@ d
 ```
 
 
-
-
-```{r, fig.height = 20, fig.width = 20}
-growth_color <- as.factor(E(stw_network)$GROWTH)
-plot(stw_network,
-     vertex.label = ifelse(V(stw_network)$type == F, V(g_test)$name, NA),
-     vertex.label.color = "black",
-     vertex.label.cex = 0.5,
-     vertex.shape = ifelse(V(stw_network)$type, "circle", "square"),
-     vertex.color = ifelse(V(stw_network)$type, cbPalette[8], cbPalette[5]),
-     vertex.size = ifelse(V(stw_network)$type, .6, 2),
-     edge.width = 2,
-     edge.color = ifelse(E(stw_network)$GROWTH == "NEG", cbPalette[7], cbPalette[4]),
-     layout = layout_with_kk)
-title(main = "STW Credential and Occupation Network", sub = "data from O*Net OnLine")
-legend("bottomleft", legend = c("Credential", "Occupation"), col = c(cbPalette[8], cbPalette[5]), pch = c(19,15), pt.cex = 1.5, bty = "n", title = "Node Type", xjust = 0)
-legend("bottomleft", legend = c("Positive Projected Growth", "Negative Projected Growth"), col = c(cbPalette[4], cbPalette[7]), pch = c(4,4), pt.cex = 1.5, bty = "n", title = "Edge Type", inset = c(0, .05), xjust = 0)
-```
-
-So, we can see that the ones that have a positive projected growth are more connected to one another in the large component, and the ones that are less connected tend to be farther out.
-
-consider how we can make this one interactive^^
-
 ```{r}
-vcount(stw_network)
+d_attributes
 ```
+legend("bottomright", legend = c("11: Management", "13: Business and Financial Operations", "17: Archictecture and Engineering", "19: Life, Physical, and Social Science", "27: Art, Design, Entertainment, Sports, and Media", "29: Healthcare Practitioners and Technical Occupations", "33: Protective Service", "35: Food Preparation and Serving", "43: Office and Administrative Support", "45: Farming, Fishing, and Forestry", "47: Construction and Extraction", "49: Installation, Maintenance, and Repair", "51: Production Occupations", "53: Transportation and Material Moving"), bty = "n", title = "SOC Major Occupation Groups", xjust = 1, cex = 1.5)
 
-```{r}
-ecount(stw_network)
-```
-
-
-```{r}
-head(d)
-```
-
-```{r}
-E(stw_network)$PER_CHG <- as.factor(E(stw_network)$PER_CHG)
-```
-
-
-```{r}
-E(stw_network)$color <- colour_values(E(stw_network)$PER_CHG, palette = "rdylgn")
-```
-
-
-```{r, fig.height = 20, fig.width = 20}
-
-plot(stw_network,
-     vertex.label = NA,
-     vertex.label.color = "black",
-     vertex.label.cex = 0.5,
-     vertex.shape = ifelse(V(stw_network)$type, "circle", "square"),
-     vertex.color = ifelse(V(stw_network)$type, cbPalette[8], cbPalette[5]),
-     vertex.size = ifelse(V(stw_network)$type, .75, 2),
-     edge.width = 2,
-     edge.color = E(stw_network)$color,
-     layout = layout_with_graphopt)
-title(main = "STW Credential and Occupation Network", sub = "data from O*Net OnLine")
-legend("bottomleft", legend = c("Credential", "Occupation"), col = c(cbPalette[8], cbPalette[5]), pch = c(19,15), pt.cex = 1.5, bty = "n", title = "Node Type", xjust = 0)
-legend("bottomleft", legend = c("Positive Projected Growth", "Negative Projected Growth"), col = c(cbPalette[4], cbPalette[7]), pch = c(4,4), pt.cex = 1.5, bty = "n", title = "Edge Type", inset = c(0, .05), xjust = 0)
-```
-
-```{r}
-
-unique(E(stw_network)$PER_CHG_CAT)
-```
-
-```{r}
-E(stw_network)$color <- ifelse(E(stw_network)$PER_CHG_CAT == "highly decreasing", WA.pal[1], ifelse(E(stw_network)$PER_CHG_CAT == "decreasing", WA.pal[2], ifelse(E(stw_network)$PER_CHG_CAT == "increasing", WA.pal[3], WA.pal[4])))
-```
-
-
-
-```{r, fig.height = 20, fig.width = 20}
+```{r, fig.height = 40, fig.width = 40}
 #E(stw_network)$color <- colour_values(E(stw_network)$PER_CHG_CAT, palette = WA.pal)
+E(stw_network)$color <- ifelse(E(stw_network)$PER_CHG_CAT == "highly decreasing", WA.pal[1], ifelse(E(stw_network)$PER_CHG_CAT == "decreasing", WA.pal[2], ifelse(E(stw_network)$PER_CHG_CAT == "increasing", WA.pal[3], WA.pal[4])))
 plot(stw_network,
-     vertex.label = NA,
+     vertex.label = ifelse(V(stw_network)$type, NA, V(stw_network)$SOC_type),
      vertex.label.color = "black",
-     vertex.label.cex = 0.5,
+     vertex.label.cex = 1.4,
      vertex.shape = ifelse(V(stw_network)$type, "circle", "square"),
      vertex.color = ifelse(V(stw_network)$type, cbPalette[8], cbPalette[5]),
-     vertex.size = ifelse(V(stw_network)$type, 1, 4),
+     vertex.size = ifelse(V(stw_network)$type, 1, 5),
      edge.width = 2,
      edge.color = E(stw_network)$color,
-     layout = layout_with_gem, xaxs = i, yaxs = i)
-legend("topright", legend = c("STW Occupations: yellow squares", "Certifications: pink circles"), bty = "n", title = "Legend", xjust = 0, cex = 1.5)
+     layout = layout_with_dh)
+legend("topright", legend = c("STW Occupations: yellow squares", "Certifications: pink circles"), bty = "n", title = "Legend", xjust = 1, cex = 1.5)
+legend("bottomright", legend = c("11: Management", "13: Business and Financial Operations", "17: Archictecture and Engineering", "19: Life, Physical, and Social Science", "27: Art, Design, Entertainment, Sports, and Media", "29: Healthcare Practitioners and Technical Occupations", "33: Protective Service", "35: Food Preparation and Serving", "43: Office and Administrative Support", "45: Farming, Fishing, and Forestry", "47: Construction and Extraction", "49: Installation, Maintenance, and Repair", "51: Production Occupations", "53: Transportation and Material Moving"), bty = "n", title = "SOC Major Occupation Groups", xjust = 1, cex = 1.5)
 ```
 
 ```{r}
@@ -371,25 +245,49 @@ get_network_stats(stw_network)
 unique(d$soc_type_name)
 ```
 
+#Art, Design Entertainment, Sports and Media Occupations
 
 ```{r}
-length(unique(d_temp$SOCNAME)) + length(unique(d_temp$Certification.Name))
-length(unique(d_attr_temp$name))
-```
-
-```{r}
-d_temp$Certification.Name[which(! d_temp$Certification.Name %in% d_attr_temp$name)]
-```
-
-```{r}
-d_temp[d_temp$Certification.Name ==  "Commercial Electrical Inspector",]
-d_attributes
+d_art<- d[d$soc_type_name == "Art,\nDesign,\nEntertainment,\nSports,\nAnd\nMedia\nOccupations",]
+#d_arch <- na.omit(d_repair)
 ```
 
 
+```{r}
+#d_art <- d_art %>% select(-Type)
+d_art <- na.omit(d_art)
+d_art <- d_art[!duplicated(d_art),]
+art <- graph.data.frame(d_art)
 
-ideas: make each of these independently, so that if I pick a color for each subgroup, we could maintain those colors in the bigger graph, or draw lines around them too I suppose.
-if I make them independently, it will only be a matter of naming them or lumping them together.  Then we could just direct the shiny app to be to the code for that one.
+
+nodelist <- data.frame(name = igraph::V(art)$name)
+
+nodelist <- nodelist %>% left_join(d_attributes, by = "name")
+
+art_net <- graph.data.frame(d_art, directed = F, vertices = nodelist)
+V(art_net)$type <- bipartite.mapping(art_net)$type
+```
+
+```{r, fig.height = 25, fig.width= 25}
+E(art_net)$color <- ifelse(E(art_net)$PER_CHG_CAT == "highly decreasing", WA.pal[1], ifelse(E(arch_net)$PER_CHG_CAT == "decreasing", WA.pal[2], ifelse(E(art_net)$PER_CHG_CAT == "increasing", WA.pal[3], WA.pal[4])))
+plot(art_net,
+     vertex.size = ifelse(V(art_net)$type, 2, 9),
+     vertex.shape = ifelse(V(art_net)$type, "circle", "square"),
+     vertex.color = ifelse(V(art_net)$type, cbPalette[6], cbPalette[5]),
+     #vertex.color = cbPalette[V(manu_net)$SOC_type],
+     vertex.label = ifelse(V(art_net)$type == F, V(art_net)$name, NA),
+     vertex.label.color = "black",
+     vertex.label.cex = 0.6,
+     edge.width = 2,
+     edge.color = E(art_net)$color,
+     layout = layout_nicely)
+legend("topright", legend = c("STW Occupations: yellow squares", "Certifications: blue circles"), bty = "n", title = "Legend", xjust = 1, cex = 1.5)
+```
+
+```{r}
+get_network_stats(art_net)
+```
+
 
 #Architecture and Engineering
 
@@ -400,7 +298,7 @@ d_arch<- d[d$soc_type_name == "Architecture\nand\nEngineering\nOccupation",]
 
 
 ```{r}
-d_arch <- d_arch %>% select(-Type)
+#d_arch <- d_arch %>% select(-Type)
 d_arch <- na.omit(d_arch)
 d_arch <- d_arch[!duplicated(d_arch),]
 arch <- graph.data.frame(d_arch)
@@ -420,10 +318,6 @@ nodelist
 d_arch
 ```
 
-```{r}
-d_arch <- d_arch %>% select(-Type)
-
-```
 
 ```{r}
 d_arch[d_arch$SOCNAME == "Surveying\n&\nMapping\nTechnicians",]
@@ -432,7 +326,7 @@ table(duplicated(d_arch))
 
 
 ```{r, fig.height = 25, fig.width= 25}
-E(arch_net)$color <- colour_values(E(arch_net)$PER_CHG, palette = "WA.pal")
+E(arch_net)$color <- ifelse(E(arch_net)$PER_CHG_CAT == "highly decreasing", WA.pal[1], ifelse(E(arch_net)$PER_CHG_CAT == "decreasing", WA.pal[2], ifelse(E(arch_net)$PER_CHG_CAT == "increasing", WA.pal[3], WA.pal[4])))
 plot(arch_net,
      vertex.size = ifelse(V(arch_net)$type, 2, 9),
      vertex.shape = ifelse(V(arch_net)$type, "circle", "square"),
@@ -443,18 +337,64 @@ plot(arch_net,
      vertex.label.cex = 0.5,
      edge.width = 2,
      edge.color = E(arch_net)$color,
-     layout = layout_with_kk)
-title("Architecture and Engineering Occupation Network", sub = "data from O*Net OnLine")
-legend("bottomleft", legend = c("Credential", "Occupation"), col = c(cbPalette[6], cbPalette[5]), pch = c(19,15), pt.cex = 1.5, bty = "n", title = "Node Type", xjust = 0)
+     layout = layout_with_dh)
+legend("topright", legend = c("STW Occupations: yellow squares", "Certifications: blue circles"), bty = "n", title = "Legend", xjust = 1, cex = 1.5)
 ```
 
+```{r}
+get_network_stats(arch_net)
+```
+
+
+#"Healthcare\nPractitioners\nand\nTechnical\nOccupation"
+
+```{r}
+d_health <- d[d$soc_type_name == "Healthcare\nPractitioners\nand\nTechnical\nOccupation",]
+#d_health <- d_health %>% select(-c(Type, Certifying.Organization))
+d_health <- d_health[!duplicated(d_health),]
+
+d_health <- na.omit(d_health)
+
+```
+
+```{r}
+hlth <- graph.data.frame(d_health)
+
+
+nodelist <- data.frame(name = igraph::V(hlth)$name)
+
+nodelist <- nodelist %>% left_join(d_attributes, by = "name")
+
+health_net <- graph.data.frame(d_health, directed = F, vertices = nodelist)
+V(health_net)$type <- bipartite.mapping(health_net)$type
+```
+
+```{r, fig.height = 20, fig.width= 20}
+E(health_net)$color <- ifelse(E(health_net)$PER_CHG_CAT == "highly decreasing", WA.pal[1], ifelse(E(const_net)$PER_CHG_CAT == "decreasing", WA.pal[2], ifelse(E(health_net)$PER_CHG_CAT == "increasing", WA.pal[3], WA.pal[4])))
+plot(health_net,
+     vertex.size = ifelse(V(health_net)$type, 2, 10),
+     vertex.shape = ifelse(V(health_net)$type, "circle", "square"),
+     vertex.color = ifelse(V(health_net)$type, cbPalette[6], cbPalette[5]),
+     #vertex.color = cbPalette[V(manu_net)$SOC_type],
+     vertex.label = ifelse(V(health_net)$type == F, V(const_net)$name, NA),
+     vertex.label.color = "black",
+     vertex.label.cex = 0.5,
+     edge.width = 2,
+     edge.color = E(health_net)$color,
+     layout = layout_nicely)
+legend("topright", legend = c("STW Occupations: yellow squares", "Certifications: blue circles"), bty = "n", title = "Legend", xjust = 1, cex = 1.5)
+```
+
+```{r}
+get_network_stats(health_net)
+```
 
 
 #Construction and Extraction Occupations
 
 ```{r}
 d_const <- d[d$soc_type_name == "Construction\nand\nExtraction\nOccupations",]
-d_const <- d_const %>% select(-Type)
+#d_const <- d_const %>% select(-c(Type, Certifying.Organization))
 d_const <- d_const[!duplicated(d_const),]
 
 d_const <- na.omit(d_const)
@@ -462,7 +402,7 @@ d_const <- na.omit(d_const)
 ```
 
 ```{r}
-d_const[d_const$SOCNAME == "Construction\nand\nBuilding\nInspectors",]
+d_const
 ```
 
 
@@ -480,9 +420,9 @@ V(const_net)$type <- bipartite.mapping(const_net)$type
 
 
 ```{r, fig.height = 20, fig.width= 20}
-E(const_net)$color <- colour_values(E(const_net)$PER_CHG, palette = "viridis")
+E(const_net)$color <- ifelse(E(const_net)$PER_CHG_CAT == "highly decreasing", WA.pal[1], ifelse(E(const_net)$PER_CHG_CAT == "decreasing", WA.pal[2], ifelse(E(const_net)$PER_CHG_CAT == "increasing", WA.pal[3], WA.pal[4])))
 plot(const_net,
-     vertex.size = ifelse(V(const_net)$type, 2, 10),
+     vertex.size = ifelse(V(const_net)$type, 2, 12),
      vertex.shape = ifelse(V(const_net)$type, "circle", "square"),
      vertex.color = ifelse(V(const_net)$type, cbPalette[6], cbPalette[5]),
      #vertex.color = cbPalette[V(manu_net)$SOC_type],
@@ -492,8 +432,7 @@ plot(const_net,
      edge.width = 2,
      edge.color = E(const_net)$color,
      layout = layout_nicely)
-title("Construction and Extraction Occupation Network", sub = "data from O*Net OnLine")
-legend("bottomleft", legend = c("Credential", "Occupation"), col = c(cbPalette[6], cbPalette[5]), pch = c(19,15), pt.cex = 1.5, bty = "n", title = "Node Type", xjust = 0)
+legend("topright", legend = c("STW Occupations: yellow squares", "Certifications: blue circles"), bty = "n", title = "Legend", xjust = 1, cex = 1.5)
 ```
 
 ```{r}
@@ -506,6 +445,11 @@ get_network_stats(const)
 ```{r}
 d_repair<- d[d$soc_type_name == "Installation,\nMaintenance,\nand\nRepair\nOccupations",]
 d_repair <- na.omit(d_repair)
+```
+
+```{r}
+#d_repair <- d_repair %>% select(-Type)
+d_repair <- d_repair[!duplicated(d_repair),]
 ```
 
 
@@ -521,7 +465,7 @@ V(rep_net)$type <- bipartite.mapping(rep_net)$type
 ```
 
 ```{r, fig.height = 20, fig.width=20}
-E(rep_net)$color <- colour_values(E(rep_net)$PER_CHG, palette = "viridis")
+E(rep_net)$color <- ifelse(E(rep_net)$PER_CHG_CAT == "highly decreasing", WA.pal[1], ifelse(E(rep_net)$PER_CHG_CAT == "decreasing", WA.pal[2], ifelse(E(rep_net)$PER_CHG_CAT == "increasing", WA.pal[3], WA.pal[4])))
 plot(rep_net,
      vertex.size = ifelse(V(rep_net)$type, 2, 13),
      vertex.shape = ifelse(V(rep_net)$type, "circle", "square"),
@@ -533,8 +477,7 @@ plot(rep_net,
      edge.width = 2,
      #edge.color = E(prod)$color,
      layout = layout_nicely)
-title("Installation, Maintenance, and Repair Occupation Network", sub = "data from O*Net OnLine")
-legend("bottomleft", legend = c("Credential", "Occupation"), col = c(cbPalette[6], cbPalette[5]), pch = c(19,15), pt.cex = 1.5, bty = "n", title = "Node Type", xjust = 0)
+legend("topright", legend = c("STW Occupations: yellow squares", "Certifications: blue circles"), bty = "n", title = "Legend", xjust = 1, cex = 1.5)
 ```
 
 ```{r}
@@ -553,6 +496,8 @@ d_repair
 d_prod <- d[d$soc_type_name == "Production\nOccupations",]
 d_prod <- na.omit(d_prod)
 d_prod_attr <- d_attributes[d_attributes$soc_type_name == "Production\nOccupations",]
+#d_prod <- d_prod %>% select(-c(Type, Certifying.Organization))
+d_prod <- d_prod[!duplicated(d_prod),]
 ```
 
 ```{r}
@@ -575,7 +520,7 @@ V(prod)$type <- bipartite.mapping(prod)$type
 
 
 ```{r, fig.height = 20, fig.width=20}
-E(prod)$color <- colour_values(E(prod)$PER_CHG, palette = "viridis")
+E(prod)$color <- ifelse(E(prod)$PER_CHG_CAT == "highly decreasing", WA.pal[1], ifelse(E(prod)$PER_CHG_CAT == "decreasing", WA.pal[2], ifelse(E(prod)$PER_CHG_CAT == "increasing", WA.pal[3], WA.pal[4])))
 plot(prod,
      vertex.size = ifelse(V(prod)$type, 2, 15),
      vertex.shape = ifelse(V(prod)$type, "circle", "square"),
@@ -587,8 +532,7 @@ plot(prod,
      edge.width = 2,
      edge.color = E(prod)$color,
      layout = layout_nicely)
-title("Production Occupation Network", sub = "data from O*Net OnLine")
-legend("bottomleft", legend = c("Credential", "Occupation"), col = c(cbPalette[6], cbPalette[5]), pch = c(19,15), pt.cex = 1.5, bty = "n", title = "Node Type", xjust = 0)
+legend("topright", legend = c("STW Occupations: yellow squares", "Certifications: blue circles"), bty = "n", title = "Legend", xjust = 1, cex = 1.5)
 ```
 
 ```{r}
@@ -615,7 +559,7 @@ V(trans_net)$type <- bipartite.mapping(trans_net)$type
 ```
 
 ```{r, fig.height = 20, fig.width=20}
-E(trans_net)$color <- colour_values(E(trans_net)$PER_CHG, palette = "viridis")
+E(trans_net)$color <- ifelse(E(trans_net)$PER_CHG_CAT == "highly decreasing", WA.pal[1], ifelse(E(trans_net)$PER_CHG_CAT == "decreasing", WA.pal[2], ifelse(E(trans_net)$PER_CHG_CAT == "increasing", WA.pal[3], WA.pal[4])))
 plot(trans_net,
      vertex.size = ifelse(V(trans_net)$type, 2, 10),
      vertex.shape = ifelse(V(trans_net)$type, "circle", "square"),
@@ -625,10 +569,9 @@ plot(trans_net,
      vertex.label.color = "black",
      vertex.label.cex = 0.6,
      edge.width = 2,
-     edge.color = E(prod)$color,
+     edge.color = E(trans_net)$color,
      layout = layout_nicely)
-title("Transportation and Material Moving Occupation Network", sub = "data from O*Net OnLine")
-legend("bottomleft", legend = c("Credential", "Occupation"), col = c(cbPalette[6], cbPalette[5]), pch = c(19,15), pt.cex = 1.5, bty = "n", title = "Node Type", xjust = 0)
+legend("topright", legend = c("STW Occupations: yellow squares", "Certifications: blue circles"), bty = "n", title = "Legend", xjust = 1, cex = 1.5)
 ```
 
 ```{r}

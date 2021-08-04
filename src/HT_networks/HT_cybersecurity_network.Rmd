@@ -248,6 +248,9 @@ V(g_test)$type <- bipartite.mapping(g_test)$type
 g_test.pr <- bipartite.projection(g_test)
 ```
 
+```{r}
+get_network_stats(g_test)
+```
 
 
 

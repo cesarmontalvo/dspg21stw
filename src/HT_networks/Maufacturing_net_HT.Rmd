@@ -37,9 +37,7 @@ m_attributes <- m_attributes %>% mutate(Occupation = gsub(" ", "\n", Occupation)
 
 ```
 
-```{r}
-m_attributes
-```
+
 
 
 ```{r}
@@ -50,18 +48,6 @@ m_attributes$Occupation <- ifelse(m_attributes$Occupation == "Rolling\nMachine\n
 m_attributes$Occupation <- ifelse(m_attributes$Occupation == "Multiple\nMachine\nTool\nSetters,\nOperators,\nand\nTenders,\nMetal\nand\nPlastic", "Multiple Machine\nTool Setters,\nOperators,\nand Tenders,\nMetal and\nPlastic", m_attributes$Occupation)
 ```
 
-
-```{r}
-table(is.na(m$ONETSOC))
-table(is.na(m$Certification))
-table(is.na(m$Occupation))
-table(duplicated(m))
-```
-
-```{r}
-nodelist
-m
-```
 
 
 ```{r}
@@ -78,6 +64,9 @@ manu_net <- graph.data.frame(m, directed = F, vertices = nodelist)
 V(manu_net)$type <- bipartite.mapping(manu_net)$type
 ```
 
+```{r}
+get_network_stats(manu_net)
+```
 
 
 ```{r, fig.height = 20, fig.width= 20}
@@ -89,10 +78,14 @@ plot(manu_net,
      vertex.label.color = "black",
      vertex.label.cex = 0.5,
      edge.color = cbPalette.blk[1],
-     edge.width = 1.5,
-     layout = layout_with_kk, xaxs = i, yaxs = i)
+     edge.width = 1,
+     layout = layout_with_dh, repel = T)
 legend("topright", legend = c("STW: yellow squares", "STEM: gray squares", "Certifications: green circles"), bty = "n", title = "Legend", xjust = 0, cex = 1.5)
 ```
+
+# see if the overlapping have the exact same credentials and if so make them into one  node
+
+
 
 ```{r, fig.height = 20}
 #E(const)$color <- colour_values(E(const)$PER_CHG, palette = “viridis”)
@@ -138,7 +131,7 @@ plot(manu_net,
      edge.width = 2,
      #edge.color = E(manu_net)$color,
      layout = layout_nicely,
-     zoom= TRUE)
+     zoom= TRUE, repel = T)
 #library(“plotly”)
 ```
 

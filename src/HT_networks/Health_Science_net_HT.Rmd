@@ -115,6 +115,10 @@ health_sci <- graph.data.frame(hs2, directed = F, vertices = nodelist)
 V(health_sci)$type <- bipartite.mapping(health_sci)$type
 ```
 
+```{r}
+get_network_stats(health_sci)
+```
+
 
 ifelse(V(health_sci)$type, "circle", "square")
 
