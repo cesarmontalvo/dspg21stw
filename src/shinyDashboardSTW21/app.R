@@ -6,6 +6,7 @@ library(rsconnect)
 library(shiny)
 library(forcats)
 library(plotly)
+library(DT)
 
 merged_cert_fam <- read.csv("merged_cert_fam.csv" ) 
 
@@ -52,8 +53,10 @@ ui <- fluidPage(
              navbarMenu("Profiling",
                         
                         tabPanel("Certifications and Occupations", style = "margin:20px",
+
                                  h5("Top Certifications"),
                                  p(style = "margin-top:25px","This figure shows the top 30 Burning Glass Technology Certifications for each SOC Occupation family in the Skilled Technical Workforce. Two types of credentials were removed from the analysis: driver’s license, including the type CDL Class A, B, C and D; and credentials identified as security clearance.  These two types of information refer to requisites for job applications rather than certifications accredited by an academic institution." ),
+
                                  br(),
                                  br(),
                                  br(),
@@ -149,7 +152,10 @@ ui <- fluidPage(
              
              
              navbarMenu("Results",
-                        tabPanel("Across Data Matching",
+                        tabPanel("Credential Matching",
+                                 h5("Credential Matching Across Data Sources"),
+                                 p("We used three main data sources in our project. These sources represented the three main players in the training and employing of STW workers. First, the O*NET data, coming from the U.S. Government's Bureau of Labor Statistics, represented government entities. Second, the Burning Glass data, pulling job ads from employers, represented industries. Finally, the Virginia Community College data set represented educational institutions."),
+                                 p("Each data source included credentials by name, but there were quite a few inconsistencies with these names. We thus matched the text across all three pairs of data sources: Burning Glass to O*NET, VA community colleges to O*NET, and Burning Glass to VA community colleges. We treat O*NET as the 'truth,' except in the Burning Glass to VA community colleges comparison, where we treat the community college data set as the truth. Below, you can pick a pairwise comparison and see our findings. Note that many credentials match up perfectly, but many more do not match well at all. This highlights the information gaps in the field of the STW."),
                                  selectInput("across", "Select", choices = c("ONETxBGT", "ONETxVA", "VAxBGT")),
                                  dataTableOutput("AcrossData")
                                  
@@ -159,6 +165,10 @@ ui <- fluidPage(
                         
                         tabPanel("Network Analysis - Occupation Clusters", style = "margin:20px",
                                  h5("Occupation Clusters"),
+                                 p("Displayed are the network graphs for STW and STEM (Science, Technology, Engineering, and Mathematics) occupations in the occupation clusters, Health Sciences, Cybersecurity, and Manufacturing.
+                                       In all three networks, STW occupations are identified with yellow squares and STEM occupations with grey squares, inside the square are the Standard Occupational Classification System (SOC) titles.
+                                       Only STEM occupations that require a bachelor’s degree or less are included. Each square is connected to the certifications listed for that occupation in O*NET online.
+                                       The goal is to identify certifications that are portable across STW and STEM occupations"),
                                  br(),
                                  br(),
                                  br(),
@@ -166,24 +176,19 @@ ui <- fluidPage(
                                    sidebarPanel(
                                      h4("Occupation"),
                                      selectInput("network", "Occupation", choices = c("Health Sciences", "Cybersecurity", "Manufacturing")),
-                                     p("Here we show the breakdown of occupation networks for three occupations of interest to the NSF,
-                                       Health Sciences, Cybersecurity, and Manufacturing.  For these graphs, we expand the information we include
-                                       to also analyze the progression from STW jobs to STEM careers.  In these graphs, we show STW jobs with yellow
-                                       squares and STEM jobs with gray squares.  The idea is that many of these occupations share credentials,
-                                       and that perhaps there is a path to a STEM field through experience and credential gain.")),
-                                    # tableOutput("nettab1"),
+                                     textOutput("vardescrip")),
+                                   # tableOutput("nettab1"),
                                    mainPanel(
                                      imageOutput("netgraph"))),
-                                 fluidRow(style = "margin-top:100px",
-                                          column(3, wellPanel(
-                                            br(),
-                                            br(),
-                                            tags$b("Network Statistics & Observations"),
-                                            textOutput("selectedvar1"))
-                                          ))),
-#<<<<<<< HEAD
+                                 fluidRow(
+                                   column(3, wellPanel(
+                                     tags$b("Network Statistics & Observations"),
+                                     uiOutput("selectedvar1"))
+                                   ))),
+                        #<<<<<<< HEAD
                         tabPanel("Network Analysis - STW by Major Occupation Group", style = "margin:20px",
                                  h5("STW by Major Occupation Group"),
+                                 p("The network is displayed for the all 133 STW occupations and separately for the seven major occupation groups that contain more than two STW occupations. The lines connecting the STW occupation titles to certifications are used to identify the 2019-2029 Bureau of Labor Employment Projections. The two shades of blue indicate occupations that will decline in number over the coming years, the two shades of yellow identify occupations that will increase, and red indicates occupations whose numbers will increase by more than 50 percent."),
                                  br(),
                                  br(),
                                  br(),
@@ -198,21 +203,17 @@ ui <- fluidPage(
                                                                                         "Installation, Maintenance, and Repair Occupations",
                                                                                         "Production Occupations",
                                                                                         "Transportation and Material Moving Occupations")),
-                                     p("We examined the entire network graph for the STW, and also break them down into occupation groups
-                                       to see how connected each major occupation group is by credentials.  We only include major occupation groups that
-                                       have multiple connected within them in the STW."),
-                                     p()),
+                                     
+                                     img(height = "100%", width = "100%", src = "test.png")),
                                    #tableOutput("nettab2")),
                                    mainPanel(
                                      imageOutput("occ_graph"))),
-                                 fluidRow(style = "margin-top:100px",
-                                          column(3, wellPanel(
-                                            br(),
-                                            br(),
-                                            tags$b("Network Statistics & Observations"),
-                                            textOutput("selectedvar2"))
-                                          ))),#end results tab 
-#=======
+                                 fluidRow(
+                                   column(3, wellPanel(
+                                     tags$b("Network Statistics & Observations"),
+                                     uiOutput("selectedvar2"))
+                                   ))),#end results tab 
+                        #=======
                         
                         tabPanel("Boxplots",style="margin:20px",
                                  h5("Boxplots", align = "center"),
@@ -238,30 +239,30 @@ ui <- fluidPage(
                                  img(src = "BGT_ONET_Box.png", height = 600, width = 1000),
                                  
                                  
-                                 )#end results tab 
-#>>>>>>> 3814624d0ea896e9d7d428b327547af7d7df317d
+                        )#end results tab 
+                        #>>>>>>> 3814624d0ea896e9d7d428b327547af7d7df317d
              ), #end navbarPage
              navbarMenu("Data Sources",
-             tabPanel("Data Sources",
-                      h3("Data Sources", align = "center", style = "margin-bottom: 50px"),
-                      style = "margin-left: 120px;",
-                      style = "margin-top: 30px;",
-                      style = "margin-right: 120px;",
-                      fluidRow(
-                        column(3, tags$img(height = "100%", width = "100%",src = "dnalogo.png")),
-                        column(6, wellPanel(p(style = "font-size:15px","The Burning Glass Technologies delivers job market analytics that empower employers, workers and educators to make data-driven decisions. The company’s artificial intelligence technology analyzes hundreds of millions of job postings and real-life career transitions to provide insight into workforce demand patterns. This real-time strategic intelligence offers crucial insights, such as which jobs are most in demand, the specific skills employers need and the career directions that offer the highest potential for workers. For more information, visit burning-glass.com. "))),
-                      hr(),
-                      fluidRow(style = "margin-top:100px",
-                               column(3, tags$img(height = "100%", width = "100%", src = "fdalogo.png")),
-                               column(7, wellPanel(
-                                   br(),
-                                   br(),
-                                   tags$b("ONET"),
-                                   p(style = "font-size:15px", "ONET Data was webscraped from the Occupational Information Network. O*NET Data descriptors are categories of occupational information collected and available for O*NET-SOC occupations. Each descriptor contains more specific elements with data ratings.")
-                                 )))
-                      )
-                      
-             )))) #end fluid page
+                        tabPanel("Data Sources",
+                                 h3("Data Sources", align = "center", style = "margin-bottom: 50px"),
+                                 style = "margin-left: 120px;",
+                                 style = "margin-top: 30px;",
+                                 style = "margin-right: 120px;",
+                                 fluidRow(
+                                   column(3, tags$img(height = "100%", width = "100%",src = "dnalogo.png")),
+                                   column(6, wellPanel(p(style = "font-size:15px","The Burning Glass Technologies delivers job market analytics that empower employers, workers and educators to make data-driven decisions. The company’s artificial intelligence technology analyzes hundreds of millions of job postings and real-life career transitions to provide insight into workforce demand patterns. This real-time strategic intelligence offers crucial insights, such as which jobs are most in demand, the specific skills employers need and the career directions that offer the highest potential for workers. For more information, visit burning-glass.com. "))),
+                                   hr(),
+                                   fluidRow(style = "margin-top:100px",
+                                            column(3, tags$img(height = "100%", width = "100%", src = "fdalogo.png")),
+                                            column(7, wellPanel(
+                                              br(),
+                                              br(),
+                                              tags$b("ONET"),
+                                              p(style = "font-size:15px", "ONET Data was webscraped from the Occupational Information Network. O*NET Data descriptors are categories of occupational information collected and available for O*NET-SOC occupations. Each descriptor contains more specific elements with data ratings.")
+                                            )))
+                                 )
+                                 
+                        )))) #end fluid page
 
 
 
@@ -296,7 +297,7 @@ server <- function(input, output) {
     
     
   })
-
+  
   output$tables <- renderTable({
     if(input$selectTable == "Completeness, Uniqueness, Duplicates"){
       
@@ -309,87 +310,24 @@ server <- function(input, output) {
     }
     
   })
-
   
-  output$withinData <- renderDataTable({
-    if(input$within == "FDAxFDA"){
-      withinTable <- read.csv("fdaxfda.csv")
-      
-      withinTable$X <- NULL
-      withinTable$fuzz.ratio <- NULL
-      withinTable$original.row.number <- NULL
-      
-      names(withinTable)[names(withinTable) == "clean.company.name"] <- "Corporate Family"
-      names(withinTable)[names(withinTable) == "company.matches"] <- "Matches"
-      names(withinTable)[names(withinTable) == "original.company.names"] <- "Original Company Name"
-      
-      
-      
-      
-      withinTable
-      
-    }else if(input$within == "NDCxNDC"){
-      withinTable <- read.csv("ndcxndc.csv")
-      
-      withinTable$X <- NULL
-      withinTable$fuzz.ratio <- NULL
-      withinTable$original.row.number <- NULL
-      
-      names(withinTable)[names(withinTable) == "clean.company.name"] <- "Corporate Family"
-      names(withinTable)[names(withinTable) == "company.matches"] <- "Matches"
-      names(withinTable)[names(withinTable) == "original.company.names"] <- "Original Company Name"
-      
-      withinTable
-    }
-  })
+  
+  
   
   output$AcrossData <- renderDataTable({
     if(input$across == "ONETxBGT"){
       acrossTable <- read.csv("onetxbg.csv")
       
-      acrossTable$X <- NULL
-      acrossTable$fda.row <- NULL
-      acrossTable$clean.fda.company.name <- NULL
-      acrossTable$clean.ndc.row <- NULL
-      acrossTable$fuzz.ratio <- NULL
-      acrossTable$clean.ndc.company <- NULL
-      
-      names(acrossTable)[names(acrossTable) == "original.fda.company"] <- "Original FDA Company"
-      names(acrossTable)[names(acrossTable) == "corporate.family"] <- "Corporate Family"
-      names(acrossTable)[names(acrossTable) == "original.ndc.company"] <- "Original NDC Company"
-      
-      acrossTable
+      datatable(acrossTable, options=list(pageLength = 10))
     }else if(input$across == "ONETxVA"){
       acrossTable <- read.csv("onetva.csv")
-      
-      acrossTable$fda.row <- NULL
-      acrossTable$clean.fda.company.name <- NULL
-      acrossTable$clean.dna.row <- NULL
-      acrossTable$fuzz.ratio <- NULL
-      acrossTable$clean.dna.company <- NULL
-      
-      acrossTable$X <- NULL
-      
-      names(acrossTable)[names(acrossTable) == "original.fda.company"] <- "Original FDA Company"
-      names(acrossTable)[names(acrossTable) == "corporate.family"] <- "Corporate Family"
-      names(acrossTable)[names(acrossTable) == "original.dna.company"] <- "Original DNA Company"
-      acrossTable
+      datatable(acrossTable, options=list(pageLength = 10))
     }else{
       acrossTable <- read.csv("vabgt.csv")
       
-      acrossTable$X <- NULL
-      acrossTable$NDC.row <- NULL
-      acrossTable$clean.NDC.company <- NULL
-      acrossTable$clean.DNA.row <- NULL
-      acrossTable$fuzz.ratio <- NULL
-      acrossTable$clean.DNA.company <- NULL
-      
-      names(acrossTable)[names(acrossTable) == "original.NDC.company"] <- "Original NDC Company"
-      names(acrossTable)[names(acrossTable) == "corporate.family"] <- "Corporate Family"
-      names(acrossTable)[names(acrossTable) == "original.DNA.company"] <- "Original DNA Company"
-      
-      acrossTable
+      datatable(acrossTable, options=list(pageLength = 10))
     }
+    
   })
   
   output$netgraph <- renderImage({
@@ -401,8 +339,8 @@ server <- function(input, output) {
     # Return a list containing the filename and alt text
     list(src = filename,
          alt = paste(input$network, "Network"),
-         width = 800,
-         height = 800)
+         width = 1000,
+         height = 1000)
     
     
     
@@ -410,14 +348,39 @@ server <- function(input, output) {
     
   }, deleteFile = FALSE)
   
-  output$selectedvar1 <- renderText({
-    paste("Network Statistics and comments for", input$network)
+  output$vardescrip <- renderText({
+    if (input$network == "Health Sciences"){
+      paste("The Health Sciences Occupation Cluster is defined by O*NET. O*NET occupation clusters include occupations in the same filed that require similar skills, knowledge, and abilities. The Health Science cluster contains six STW occupations.")
+    }
+    
+    else if (input$network == "Cybersecurity"){
+      paste("There is no Cybersecurity Occupation Cluster in O*NET, so occupations in the cluster were identified using two sources. The first used O*NET online and searched on the term “cyber” keeping only those occupations in the STW. The second used information on the National Institute of Standards and Technology’s National Initiative for Cybersecurity Education (NICE) website. In conjunction with CompTIA and Burning Glass, NICE developed CyberSeek which provides detailed information about the credentials demanded by employers and career pathways in cybersecurity that maps opportunities for advancement in the field. Feeder and entry role occupations listed on CyberSeek along with all the common job titles were entered into O*NET online and those occupations in the STW and STEM occupations that require a bachelor’s degree or less were included.")
+    }
+    
+    else {
+      paste("The Manufacturing Occupation Cluster is defined by O*NET career clusters. O*NET career clusters include occupations in the same filed that require similar skills, knowledge, and abilities. There are 148 occupations in the Manufacturing cluster, thirty-three (22%) are STW occupations.")
+    }
+  })
+  
+  output$selectedvar1 <- renderUI({
+    if (input$network == "Health Sciences"){
+      HTML("<ul><li>Network size: 485 nodes</li><li>Network density (# of edges / # of possible edges): 0.004</li><li>Number of components: 14</li><li>Diameter (the greatest distance between any pair of connected vertices): 10</li></ul>")
+    }
+    
+    else if (input$network == "Cybersecurity"){
+      HTML("<ul><li>Network size: 722 nodes</li><li>Network density (# of edges / # of possible edges): 0.003</li><li>Number of components: 2</li><li>Diameter (the greatest distance between any pair of connected vertices): 10</li></ul>")
+    }
+    
+    else {
+      HTML("<ul><li>Network size: 294 nodes</li><li>Network density (# of edges / # of possible edges): 0.007</li><li>Number of components: 23</li><li>Diameter (the greatest distance between any pair of connected vertices): 8</li></ul>")
+    }
+    
   })
   
   
   
   
-#<<<<<<< HEAD
+  #<<<<<<< HEAD
   #The two below may need to be in an if/else statement to work with the 2 dropdowns.
   output$occ_group <- renderImage({
     
@@ -428,15 +391,15 @@ server <- function(input, output) {
     # Return a list containing the filename and alt text
     list(src = filename,
          alt = paste(input$occ_group, "Network"),
-         width = 800,
-         height = 800)})
+         width = 900,
+         height = 900)})
   
   
-#=======
-
+  #=======
   
   
-#<<<<<<< HEAD
+  
+  #<<<<<<< HEAD
   output$occ_graph <- renderImage({
     
     # When input$network is nursing, filename is ./www/nursing.png
@@ -455,16 +418,42 @@ server <- function(input, output) {
   
   
   
-  output$selectedvar2 <- renderText({
-    paste("Network Statistics and comments for", input$occ_group)
+  output$selectedvar2 <- renderUI({
+    if (input$occ_group == "Entire Network"){
+      HTML("<ul><li>Network size: 1054 nodes</li><li>Network density (# of edges / # of possible edges): 0.002</li><li>Number of components: 50</li><li>Diameter (the greatest distance between any pair of connected vertices): 21</li></ul>")
+    }
+    
+    else if (input$occ_group == "Architecture and Engineering Occupations"){
+      HTML("<ul><li>Network size: 120 nodes</li><li>Network density (# of edges / # of possible edges): 0.018</li><li>Number of components: 6</li><li>Diameter (the greatest distance between any pair of connected vertices): 6")
+    }
+    else if (input$occ_group == "Art, Design, Entertainment, Sports, and Media Occupations"){
+      HTML("<ul><li>Network size: 64 nodes</li><li>Network density (# of edges / # of possible edges): 0.03</li><li>Number of components: 5</li><li>Diameter (the greatest distance between any pair of connected vertices): 4")
+    }
+    else if (input$occ_group == "Healthcare Practitioners and Technical Occupations"){
+      HTML("<ul><li>Network size: 31 nodes</li><li>Network density (# of edges / # of possible edges): 0.062</li><li>Number of components: 4</li><li>Diameter (the greatest distance between any pair of connected vertices): 3")
+    }
+    else if (input$occ_group == "Construction and Extraction Occupations"){
+      HTML("<ul><li>Network size: 216 nodes</li><li>Network density (# of edges / # of possible edges): 0.005</li><li>Number of components: 7</li><li>Diameter (the greatest distance between any pair of connected vertices): 1")
+    }
+    else if (input$occ_group == "Installation, Maintenance, and Repair Occupations"){
+      HTML("<ul><li>Network size: 345 nodes</li><li>Network density (# of edges / # of possible edges): 0.003</li><li>Number of components: 18</li><li>Diameter (the greatest distance between any pair of connected vertices): 1")
+    }
+    else if (input$occ_group == "Production Occupations"){
+      HTML("<ul><li>Network size: 85 nodes</li><li>Network density (# of edges / # of possible edges): 0.023</li><li>Number of components: 11</li><li>Diameter (the greatest distance between any pair of connected vertices): 4")
+    }
+    
+    else {
+      HTML("<ul><li>Network size: 55 nodes</li><li>Network density (# of edges / # of possible edges): 0.034</li><li>Number of components: 4</li><li>Diameter (the greatest distance between any pair of connected vertices): 2")
+    }
   })
-#=======
+  #=======
   
-#>>>>>>> 3814624d0ea896e9d7d428b327547af7d7df317d
+  #>>>>>>> 3814624d0ea896e9d7d428b327547af7d7df317d
 }
 
 # Run the application
 shinyApp(ui = ui, server = server)
+
 
 
 

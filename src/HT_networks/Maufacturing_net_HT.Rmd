@@ -20,72 +20,8 @@ library(igraph)
 
 
 ```{r}
-man1 <- read_xlsx("Manufacturing.xlsx")
-man2 <- read_xlsx("Manufacturing_2.xlsx")
+m <- read_csv("manufacturing_duplicates_corrected.csv")
 ```
-
-
-```{r}
-man1 <- man1 %>% mutate(Code = substr(ONETSOC, start = 1, stop = 7))
-man2 <- man2 %>% mutate(Code2 = substr(Code, start = 1, stop = 7))
-```
-
-```{r}
-table(man1$ONETSOC[man1$Type...1 == "STEM"])
-table(man2$Code[man2$Type == "STEM"])
-```
-
-```{r}
-man1 <- man1 %>% select(ONETSOC, CertName = `Certification Name`)
-man2 <- man2 %>% select(ONETSOC = Code, cluster = `Career Cluster`,pathway = `Career Pathway`, Occupation, Type)
-```
-
-```{r}
-manufacturing <- man2 %>% left_join(man1, by = "ONETSOC")
-```
-
-```{r}
-manufacturing
-```
-
-```{r}
-manufacturing <- manufacturing %>% mutate(ONETSOC = substr(ONETSOC, start = 1, stop = 7))
-```
-
-
-```{r}
-stw_man_certs <- d %>% select(SOC, Cert = Certification.Name)
-```
-
-```{r}
-table(manufacturing$ONETSOC[manufacturing$Type == "STW"] %in% stw_man_certs$SOC)
-```
-
-```{r}
-manufacturing1 <- manufacturing %>% left_join(stw_man_certs, by = c("ONETSOC" = "SOC"))
-```
-
-```{r}
-manufacturing1[manufacturing1$Type == "STEM",]
-```
-
-```{r}
-manufacturing2 <- manufacturing1 %>% mutate(Certification = ifelse(is.na(CertName), Cert, CertName))
-```
-
-```{r}
-manufacturing2
-```
-
-```{r}
-m <- manufacturing2 %>% select(ONETSOC, Certification, Occupation, Type) %>% na.omit(ONETSOC, Certification)
-```
-
-
-```{r}
-m[m$ONETSOC == "17-3029",]
-```
-
 
 
 ```{r}
@@ -96,47 +32,121 @@ m_attributes1 <- m_attributes1[!duplicated(m_attributes1$name),]
 m_attributes2 <- m_attributes2[!duplicated(m_attributes2$name),]
 
 m_attributes <- rbind(m_attributes1, m_attributes2)
+m <- m %>% mutate(Occupation = gsub(" ", "\n", Occupation))
+m_attributes <- m_attributes %>% mutate(Occupation = gsub(" ", "\n", Occupation))
+
 ```
 
 ```{r}
+m_attributes
+```
+
+
+```{r}
+m_attributes$Occupation <- ifelse(m_attributes$Occupation == "Plating\nMachine\nSetters,\nOperators,\nand\nTenders,\nMetal\nand\nPlastic", "Plating Machine\nSetters, Operators,\nand Tenders, Metal\nand Plastic", m_attributes$Occupation)
+
+m_attributes$Occupation <- ifelse(m_attributes$Occupation == "Rolling\nMachine\nSetters,\nOperators,\nand\nTenders,\nMetal\nand\nPlastic", "Rolling Machine\nSetters, Operators,\nand Tenders, Metal\nand Plastic", m_attributes$Occupation)
+
+m_attributes$Occupation <- ifelse(m_attributes$Occupation == "Multiple\nMachine\nTool\nSetters,\nOperators,\nand\nTenders,\nMetal\nand\nPlastic", "Multiple Machine\nTool Setters,\nOperators,\nand Tenders,\nMetal and\nPlastic", m_attributes$Occupation)
+```
+
+
+```{r}
+table(is.na(m$ONETSOC))
+table(is.na(m$Certification))
+table(is.na(m$Occupation))
+table(duplicated(m))
+```
+
+```{r}
+nodelist
 m
 ```
 
-```{r}
-m <- m %>% mutate(Occupation = gsub(" ", "\n", Occupation))
-m_attributes <- m_attributes %>% mutate(Occupation = gsub(" ", "\n", Occupation))
-```
 
 ```{r}
-m <- m[!duplicated(m),]
-```
-
-```{r}
-m[m$Occupation == "Electro-Mechanical\nand\nMechatronics\nTechnologists\nand\nTechnicians",]
-```
+#m <- na.omit(m)
+mg <- graph.data.frame(m)
 
 
-```{r}
-manu_net <- graph.data.frame(m, directed = F, vertices = m_attributes)
+nodelist <- data.frame(name = igraph::V(mg)$name)
+
+nodelist <- nodelist %>% left_join(m_attributes, by = "name")
+#nodelist <- na.omit(nodelist)
+
+manu_net <- graph.data.frame(m, directed = F, vertices = nodelist)
 V(manu_net)$type <- bipartite.mapping(manu_net)$type
 ```
+
 
 
 ```{r, fig.height = 20, fig.width= 20}
 plot(manu_net,
      vertex.shape = ifelse(V(manu_net)$type, "circle", "square"),
      vertex.color = ifelse(V(manu_net)$type == F, ifelse(V(manu_net)$Type == "STW", cbPalette[5], cbPalette[1]), cbPalette[4]),
-     vertex.size = ifelse(V(manu_net)$type, 3, 9),
+     vertex.size = ifelse(V(manu_net)$type, 2, 9),
      vertex.label = ifelse(V(manu_net)$type == F, V(manu_net)$Occupation, NA),
      vertex.label.color = "black",
-     vertex.label.cex = 0.6,
+     vertex.label.cex = 0.5,
      edge.color = cbPalette.blk[1],
      edge.width = 1.5,
-     layout = layout_nicely)
-title(main = "Manufacturing Credential and Occupation Network", sub = "data from O*Net OnLine")
-legend("bottomleft", legend = c("STW", "Non-STW"), col = c(cbPalette[5],cbPalette[1]), pch = 19, pt.cex = 1.5, bty = "n", title = "Type of Occupation", xjust = 0)
-legend("bottomleft", legend = c("Credential", "Occupation"), pch = c(19, 15), pt.cex = 1.5, bty = "n", title = "Node Type", inset = c(0, .05), xjust = 0)
+     layout = layout_with_kk, xaxs = i, yaxs = i)
+legend("topright", legend = c("STW: yellow squares", "STEM: gray squares", "Certifications: green circles"), bty = "n", title = "Legend", xjust = 0, cex = 1.5)
 ```
+
+```{r, fig.height = 20}
+#E(const)$color <- colour_values(E(const)$PER_CHG, palette = “viridis”)
+set.seed(100)
+plot(manu_net,
+     vertex.size = ifelse(V(manu_net)$type, 2, 13),
+     vertex.shape = ifelse(V(manu_net)$type, "circle", "square"),
+     vertex.color = ifelse(V(manu_net)$type, cbPalette[6], cbPalette[5]),
+     #vertex.color = cbPalette[V(manu_net)$SOC_type],
+     vertex.label = ifelse(V(manu_net)$type == F, V(manu_net)$Occupation, NA),
+     vertex.label.color = "black",
+     vertex.label.cex = 0.5,
+     edge.width = 2,
+     #edge.color = E(manu_net)$color,
+     layout = layout_nicely,
+     zoom= TRUE)
+#library(“plotly”)
+
+set.seed(1000)
+plot(manu_net,
+     vertex.size = ifelse(V(manu_net)$type, 2, 13),
+     vertex.shape = ifelse(V(manu_net)$type, "circle", "square"),
+     vertex.color = ifelse(V(manu_net)$type, cbPalette[6], cbPalette[5]),
+     #vertex.color = cbPalette[V(manu_net)$SOC_type],
+     vertex.label = ifelse(V(manu_net)$type == F, V(manu_net)$Occupation, NA),
+     vertex.label.color = "black",
+     vertex.label.cex = 0.5,
+     edge.width = 2,
+     #edge.color = E(manu_net)$color,
+     layout = layout_nicely,
+     zoom= TRUE)
+#library(“plotly”)
+
+set.seed(100000)
+plot(manu_net,
+     vertex.size = ifelse(V(manu_net)$type, 2, 13),
+     vertex.shape = ifelse(V(manu_net)$type, "circle", "square"),
+     vertex.color = ifelse(V(manu_net)$type, cbPalette[6], cbPalette[5]),
+     #vertex.color = cbPalette[V(manu_net)$SOC_type],
+     vertex.label = ifelse(V(manu_net)$type == F, V(manu_net)$Occupation, NA),
+     vertex.label.color = "black",
+     vertex.label.cex = 0.5,
+     edge.width = 2,
+     #edge.color = E(manu_net)$color,
+     layout = layout_nicely,
+     zoom= TRUE)
+#library(“plotly”)
+```
+
+
+```{r}
+get_network_stats(manu_net)
+```
+
 
 ```{r}
 library(ggraph)
