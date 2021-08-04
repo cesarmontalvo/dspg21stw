@@ -6,6 +6,7 @@ library(rsconnect)
 library(shiny)
 library(forcats)
 library(plotly)
+library(DT)
 
 merged_cert_fam <- read.csv("merged_cert_fam.csv" ) 
 
@@ -149,7 +150,10 @@ ui <- fluidPage(
              
              
              navbarMenu("Results",
-                        tabPanel("Across Data Matching",
+                        tabPanel("Credential Matching",
+                                 h5("Credential Matching Across Data Sources"),
+                                 p("We used three main data sources in our project. These sources represented the three main players in the training and employing of STW workers. First, the O*NET data, coming from the U.S. Government's Bureau of Labor Statistics, represented government entities. Second, the Burning Glass data, pulling job ads from employers, represented industries. Finally, the Virginia Community College data set represented educational institutions."),
+                                 p("Each data source included credentials by name, but there were quite a few inconsistencies with these names. We thus matched the text across all three pairs of data sources: Burning Glass to O*NET, VA community colleges to O*NET, and Burning Glass to VA community colleges. We treat O*NET as the 'truth,' except in the Burning Glass to VA community colleges comparison, where we treat the community college data set as the truth. Below, you can pick a pairwise comparison and see our findings. Note that many credentials match up perfectly, but many more do not match well at all. This highlights the information gaps in the field of the STW."),
                                  selectInput("across", "Select", choices = c("ONETxBGT", "ONETxVA", "VAxBGT")),
                                  dataTableOutput("AcrossData")
                                  
@@ -171,15 +175,15 @@ ui <- fluidPage(
                                      h4("Occupation"),
                                      selectInput("network", "Occupation", choices = c("Health Sciences", "Cybersecurity", "Manufacturing")),
                                      textOutput("vardescrip")),
-                                    # tableOutput("nettab1"),
+                                   # tableOutput("nettab1"),
                                    mainPanel(
                                      imageOutput("netgraph"))),
                                  fluidRow(
-                                          column(3, wellPanel(
-                                            tags$b("Network Statistics & Observations"),
-                                            uiOutput("selectedvar1"))
-                                          ))),
-#<<<<<<< HEAD
+                                   column(3, wellPanel(
+                                     tags$b("Network Statistics & Observations"),
+                                     uiOutput("selectedvar1"))
+                                   ))),
+                        #<<<<<<< HEAD
                         tabPanel("Network Analysis - STW by Major Occupation Group", style = "margin:20px",
                                  h5("STW by Major Occupation Group"),
                                  p("The network is displayed for the all 133 STW occupations and separately for the seven major occupation groups that contain more than two STW occupations. The lines connecting the STW occupation titles to certifications are used to identify the 2019-2029 Bureau of Labor Employment Projections. The two shades of blue indicate occupations that will decline in number over the coming years, the two shades of yellow identify occupations that will increase, and red indicates occupations whose numbers will increase by more than 50 percent."),
@@ -197,17 +201,17 @@ ui <- fluidPage(
                                                                                         "Installation, Maintenance, and Repair Occupations",
                                                                                         "Production Occupations",
                                                                                         "Transportation and Material Moving Occupations")),
-                                  
+                                     
                                      img(height = "100%", width = "100%", src = "test.png")),
                                    #tableOutput("nettab2")),
                                    mainPanel(
                                      imageOutput("occ_graph"))),
                                  fluidRow(
-                                          column(3, wellPanel(
-                                            tags$b("Network Statistics & Observations"),
-                                            uiOutput("selectedvar2"))
-                                          ))),#end results tab 
-#=======
+                                   column(3, wellPanel(
+                                     tags$b("Network Statistics & Observations"),
+                                     uiOutput("selectedvar2"))
+                                   ))),#end results tab 
+                        #=======
                         
                         tabPanel("Boxplots",style="margin:20px",
                                  h5("Boxplots", align = "center"),
@@ -233,30 +237,30 @@ ui <- fluidPage(
                                  img(src = "BGT_ONET_Box.png", height = 600, width = 1000),
                                  
                                  
-                                 )#end results tab 
-#>>>>>>> 3814624d0ea896e9d7d428b327547af7d7df317d
+                        )#end results tab 
+                        #>>>>>>> 3814624d0ea896e9d7d428b327547af7d7df317d
              ), #end navbarPage
              navbarMenu("Data Sources",
-             tabPanel("Data Sources",
-                      h3("Data Sources", align = "center", style = "margin-bottom: 50px"),
-                      style = "margin-left: 120px;",
-                      style = "margin-top: 30px;",
-                      style = "margin-right: 120px;",
-                      fluidRow(
-                        column(3, tags$img(height = "100%", width = "100%",src = "dnalogo.png")),
-                        column(6, wellPanel(p(style = "font-size:15px","The Burning Glass Technologies delivers job market analytics that empower employers, workers and educators to make data-driven decisions. The company’s artificial intelligence technology analyzes hundreds of millions of job postings and real-life career transitions to provide insight into workforce demand patterns. This real-time strategic intelligence offers crucial insights, such as which jobs are most in demand, the specific skills employers need and the career directions that offer the highest potential for workers. For more information, visit burning-glass.com. "))),
-                      hr(),
-                      fluidRow(style = "margin-top:100px",
-                               column(3, tags$img(height = "100%", width = "100%", src = "fdalogo.png")),
-                               column(7, wellPanel(
-                                   br(),
-                                   br(),
-                                   tags$b("ONET"),
-                                   p(style = "font-size:15px", "ONET Data was webscraped from the Occupational Information Network. O*NET Data descriptors are categories of occupational information collected and available for O*NET-SOC occupations. Each descriptor contains more specific elements with data ratings.")
-                                 )))
-                      )
-                      
-             )))) #end fluid page
+                        tabPanel("Data Sources",
+                                 h3("Data Sources", align = "center", style = "margin-bottom: 50px"),
+                                 style = "margin-left: 120px;",
+                                 style = "margin-top: 30px;",
+                                 style = "margin-right: 120px;",
+                                 fluidRow(
+                                   column(3, tags$img(height = "100%", width = "100%",src = "dnalogo.png")),
+                                   column(6, wellPanel(p(style = "font-size:15px","The Burning Glass Technologies delivers job market analytics that empower employers, workers and educators to make data-driven decisions. The company’s artificial intelligence technology analyzes hundreds of millions of job postings and real-life career transitions to provide insight into workforce demand patterns. This real-time strategic intelligence offers crucial insights, such as which jobs are most in demand, the specific skills employers need and the career directions that offer the highest potential for workers. For more information, visit burning-glass.com. "))),
+                                   hr(),
+                                   fluidRow(style = "margin-top:100px",
+                                            column(3, tags$img(height = "100%", width = "100%", src = "fdalogo.png")),
+                                            column(7, wellPanel(
+                                              br(),
+                                              br(),
+                                              tags$b("ONET"),
+                                              p(style = "font-size:15px", "ONET Data was webscraped from the Occupational Information Network. O*NET Data descriptors are categories of occupational information collected and available for O*NET-SOC occupations. Each descriptor contains more specific elements with data ratings.")
+                                            )))
+                                 )
+                                 
+                        )))) #end fluid page
 
 
 
@@ -291,7 +295,7 @@ server <- function(input, output) {
     
     
   })
-
+  
   output$tables <- renderTable({
     if(input$selectTable == "Validity"){
       
@@ -309,87 +313,24 @@ server <- function(input, output) {
     }
     
   })
-
   
-  output$withinData <- renderDataTable({
-    if(input$within == "FDAxFDA"){
-      withinTable <- read.csv("fdaxfda.csv")
-      
-      withinTable$X <- NULL
-      withinTable$fuzz.ratio <- NULL
-      withinTable$original.row.number <- NULL
-      
-      names(withinTable)[names(withinTable) == "clean.company.name"] <- "Corporate Family"
-      names(withinTable)[names(withinTable) == "company.matches"] <- "Matches"
-      names(withinTable)[names(withinTable) == "original.company.names"] <- "Original Company Name"
-      
-      
-      
-      
-      withinTable
-      
-    }else if(input$within == "NDCxNDC"){
-      withinTable <- read.csv("ndcxndc.csv")
-      
-      withinTable$X <- NULL
-      withinTable$fuzz.ratio <- NULL
-      withinTable$original.row.number <- NULL
-      
-      names(withinTable)[names(withinTable) == "clean.company.name"] <- "Corporate Family"
-      names(withinTable)[names(withinTable) == "company.matches"] <- "Matches"
-      names(withinTable)[names(withinTable) == "original.company.names"] <- "Original Company Name"
-      
-      withinTable
-    }
-  })
+  
+  
   
   output$AcrossData <- renderDataTable({
     if(input$across == "ONETxBGT"){
       acrossTable <- read.csv("onetxbg.csv")
       
-      acrossTable$X <- NULL
-      acrossTable$fda.row <- NULL
-      acrossTable$clean.fda.company.name <- NULL
-      acrossTable$clean.ndc.row <- NULL
-      acrossTable$fuzz.ratio <- NULL
-      acrossTable$clean.ndc.company <- NULL
-      
-      names(acrossTable)[names(acrossTable) == "original.fda.company"] <- "Original FDA Company"
-      names(acrossTable)[names(acrossTable) == "corporate.family"] <- "Corporate Family"
-      names(acrossTable)[names(acrossTable) == "original.ndc.company"] <- "Original NDC Company"
-      
-      acrossTable
+      datatable(acrossTable, options=list(pageLength = 10))
     }else if(input$across == "ONETxVA"){
       acrossTable <- read.csv("onetva.csv")
-      
-      acrossTable$fda.row <- NULL
-      acrossTable$clean.fda.company.name <- NULL
-      acrossTable$clean.dna.row <- NULL
-      acrossTable$fuzz.ratio <- NULL
-      acrossTable$clean.dna.company <- NULL
-      
-      acrossTable$X <- NULL
-      
-      names(acrossTable)[names(acrossTable) == "original.fda.company"] <- "Original FDA Company"
-      names(acrossTable)[names(acrossTable) == "corporate.family"] <- "Corporate Family"
-      names(acrossTable)[names(acrossTable) == "original.dna.company"] <- "Original DNA Company"
-      acrossTable
+      datatable(acrossTable, options=list(pageLength = 10))
     }else{
       acrossTable <- read.csv("vabgt.csv")
       
-      acrossTable$X <- NULL
-      acrossTable$NDC.row <- NULL
-      acrossTable$clean.NDC.company <- NULL
-      acrossTable$clean.DNA.row <- NULL
-      acrossTable$fuzz.ratio <- NULL
-      acrossTable$clean.DNA.company <- NULL
-      
-      names(acrossTable)[names(acrossTable) == "original.NDC.company"] <- "Original NDC Company"
-      names(acrossTable)[names(acrossTable) == "corporate.family"] <- "Corporate Family"
-      names(acrossTable)[names(acrossTable) == "original.DNA.company"] <- "Original DNA Company"
-      
-      acrossTable
+      datatable(acrossTable, options=list(pageLength = 10))
     }
+    
   })
   
   output$netgraph <- renderImage({
@@ -442,7 +383,7 @@ server <- function(input, output) {
   
   
   
-#<<<<<<< HEAD
+  #<<<<<<< HEAD
   #The two below may need to be in an if/else statement to work with the 2 dropdowns.
   output$occ_group <- renderImage({
     
@@ -457,11 +398,11 @@ server <- function(input, output) {
          height = 900)})
   
   
-#=======
-
+  #=======
   
   
-#<<<<<<< HEAD
+  
+  #<<<<<<< HEAD
   output$occ_graph <- renderImage({
     
     # When input$network is nursing, filename is ./www/nursing.png
@@ -508,13 +449,14 @@ server <- function(input, output) {
       HTML("<ul><li>Network size: 55 nodes</li><li>Network density (# of edges / # of possible edges): 0.034</li><li>Number of components: 4</li><li>Diameter (the greatest distance between any pair of connected vertices): 2")
     }
   })
-#=======
+  #=======
   
-#>>>>>>> 3814624d0ea896e9d7d428b327547af7d7df317d
+  #>>>>>>> 3814624d0ea896e9d7d428b327547af7d7df317d
 }
 
 # Run the application
 shinyApp(ui = ui, server = server)
+
 
 
 
