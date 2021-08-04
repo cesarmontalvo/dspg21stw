@@ -163,6 +163,20 @@ ui <- fluidPage(
                                  
                         ),
                         
+                        
+                        tabPanel("Boxplots",style="margin:20px",
+                                 h5("Boxplots", align = "center"),
+                                 p(style = "margin-top:25px","To visualize the relationships between the named credentials within the two main datasets of interest, O*NET and Burning Glass, we created boxplots. One natural question to ask is whether there are more precise matches in how credentials are referenced within certain types of jobs. Within the Skilled Technical Workforce, there are 14 occupational groups."),
+                                 #https://www.bls.gov/soc/2018/major_groups.htm
+                                 
+                                 p("The boxplot below shows the confidences for our text matching algorithm between Burning Glass credentials and O*NET credentials for each of these occupational groups. While some groups' confidences are somewhat higher than others, all results are somewhat low. This highlights the gaps between industries, governments, and educational institutions, and shows these gaps manifest even in the language used to discuss occupations and credentials. " ),
+                                 #br(),
+                                 #p("Originally, the dataset contained 1,942,855 data entries. Given a restriction on memory and running power, we decided to only have unique and complete entries as it diminished the dataset by 96.2% to 73, 688 entries, while still fulfilling our main goal of understanding what companies are producing innovation. The visualization [above/below] demonstrates the total percentage of data entries that passed our validity checks.  About 78.3% of the total unique entries passed the validity check, 100% of the entries were published after 2010, and 91.7% of the entries contained valid company codes.  "),
+                                 img(src = "onetbgtconfidence.png", height = 600, width = 1000),
+                                 
+                                 
+                        ),#end results tab 
+                        
                         tabPanel("Network Analysis - Occupation Clusters", style = "margin:20px",
                                  h5("Occupation Clusters"),
                                  p("Displayed are the network graphs for STW and STEM (Science, Technology, Engineering, and Mathematics) occupations in the occupation clusters, Health Sciences, Cybersecurity, and Manufacturing.
@@ -212,57 +226,34 @@ ui <- fluidPage(
                                    column(3, wellPanel(
                                      tags$b("Network Statistics & Observations"),
                                      uiOutput("selectedvar2"))
-                                   ))),#end results tab 
-                        #=======
+                                   )))#end results tab 
+
                         
-                        tabPanel("Boxplots",style="margin:20px",
-                                 h5("Boxplots", align = "center"),
-                                 p(style = "margin-top:25px","To visualize the relationships between the named credentials within the two main datasets of interest, O*NET and Burning Glass, we created boxplots. One natural question to ask is whether there are more precise matches in how credentials are referenced within certain types of jobs. Within the Skilled Technical Workforce, there are 14 occupational groups. These are:"),
-                                 #https://www.bls.gov/soc/2018/major_groups.htm
-                                 p("1) 11. Management Occupations,"),
-                                 p("2) 13. Business and Financial Operations Occupations,"),
-                                 p("3) 17. Architecture and Engineering Occupation,"),
-                                 p("4) 19. Life, Physical, and Social Science Occupations,"),
-                                 p("5) 27. Art, Design, Entertainment, Sports, And Media Occupations,"),
-                                 p("6) 29. Healthcare Practitioners and Technical Occupation,"),
-                                 p("7) 33. Protective Service Occupations,"),
-                                 p("8) 35. Food Preparation and Serving Related Occupations,"),
-                                 p("9) 43. Office and Administrative Support Occupations,"),
-                                 p("10) 45. Farming, Fishing, and Forestry Occupations,"),
-                                 p("11) 47. Construction and Extraction Occupations,"),
-                                 p("12) 49. Installation, Maintenance, and Repair Occupations,"),
-                                 p("13) 51. Production Occupations, and"),
-                                 p("14) 53. Transportation and Material Moving Occupations."),
-                                 p("The boxplot below shows the confidences for our text matching algorithm between Burning Glass credentials and O*NET credentials for each of these occupational groups. While some groups' confidences are somewhat higher than others, all results are somewhat low. This highlights the gaps between industries, governments, and educational institutions, and shows these gaps manifest even in the language used to discuss occupations and credentials. " ),
-                                 #br(),
-                                 #p("Originally, the dataset contained 1,942,855 data entries. Given a restriction on memory and running power, we decided to only have unique and complete entries as it diminished the dataset by 96.2% to 73, 688 entries, while still fulfilling our main goal of understanding what companies are producing innovation. The visualization [above/below] demonstrates the total percentage of data entries that passed our validity checks.  About 78.3% of the total unique entries passed the validity check, 100% of the entries were published after 2010, and 91.7% of the entries contained valid company codes.  "),
-                                 img(src = "BGT_ONET_Box.png", height = 600, width = 1000),
-                                 
-                                 
-                        )#end results tab 
-                        #>>>>>>> 3814624d0ea896e9d7d428b327547af7d7df317d
              ), #end navbarPage
-             navbarMenu("Data Sources",
-                        tabPanel("Data Sources",
-                                 h3("Data Sources", align = "center", style = "margin-bottom: 50px"),
-                                 style = "margin-left: 120px;",
-                                 style = "margin-top: 30px;",
-                                 style = "margin-right: 120px;",
-                                 fluidRow(
-                                   column(3, tags$img(height = "100%", width = "100%",src = "dnalogo.png")),
-                                   column(6, wellPanel(p(style = "font-size:15px","The Burning Glass Technologies delivers job market analytics that empower employers, workers and educators to make data-driven decisions. The company’s artificial intelligence technology analyzes hundreds of millions of job postings and real-life career transitions to provide insight into workforce demand patterns. This real-time strategic intelligence offers crucial insights, such as which jobs are most in demand, the specific skills employers need and the career directions that offer the highest potential for workers. For more information, visit burning-glass.com. "))),
-                                   hr(),
-                                   fluidRow(style = "margin-top:100px",
-                                            column(3, tags$img(height = "100%", width = "100%", src = "fdalogo.png")),
-                                            column(7, wellPanel(
-                                              br(),
-                                              br(),
-                                              tags$b("ONET"),
-                                              p(style = "font-size:15px", "ONET Data was webscraped from the Occupational Information Network. O*NET Data descriptors are categories of occupational information collected and available for O*NET-SOC occupations. Each descriptor contains more specific elements with data ratings.")
-                                            )))
-                                 )
-                                 
-                        )))) #end fluid page
+             
+             
+             tabPanel("Data Sources",
+                      #h3("Methods", align = "center", style = "margin-bottom: 50px"),
+                      style = "margin-left: 120px;",
+                      style = "margin-top: 30px;",
+                      style = "margin-right: 120px;",
+                      
+                      
+                      fluidRow(style = "margin-top:100px",
+                               column(3, h5("Burning Glass Technologies")),
+                               column(6, wellPanel(p(style = "font-size:15px","The Burning Glass Technologies delivers job market analytics that empower employers, workers and educators to make data-driven decisions. The company’s artificial intelligence technology analyzes hundreds of millions of job postings and real-life career transitions to provide insight into workforce demand patterns. This real-time strategic intelligence offers crucial insights, such as which jobs are most in demand, the specific skills employers need and the career directions that offer the highest potential for workers. For more information, visit burning-glass.com. ")))
+                      ),
+                      hr(),
+                      fluidRow(style = "margin-top:100px",
+                               column(3, h5("Occupation Information Network (O*NET)")),
+                               column(6, wellPanel(p(style = "font-size:15px","ONET Data was webscraped from the Occupational Information Network. O*NET Data descriptors are categories of occupational information collected and available for O*NET-SOC occupations. Each descriptor contains more specific elements with data ratings.")))
+                      ),
+
+                      
+                      
+                      
+                      
+             ))) #end fluid page
 
 
 
