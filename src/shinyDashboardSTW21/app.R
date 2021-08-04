@@ -14,7 +14,7 @@ merged_cert_fam <- read.csv("merged_cert_fam.csv" )
 ui <- fluidPage(
   theme ="themes.css",
   
-  navbarPage(title = span("Skilled Technical Workforce", style = "color:#232D4B"),
+  navbarPage(title = HTML("<img src='./DSPG_black-01.png' width='120px' style='margin-top:-10px;'/>"),
              tabPanel("About",style = "margin:45px",
                       fluidRow(
                         #column(3, tags$img(height = "80%", width = "80%", src = "biilogo.png")),
