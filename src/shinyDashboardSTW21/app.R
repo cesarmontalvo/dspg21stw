@@ -37,6 +37,7 @@ ui <- fluidPage(
                       p("SDAD: Vicki Lancaster and Cesar Montalvo"),
                       p("DSPG: Emily Kurtz (Fellow), Haleigh Tomlin (Intern), Madeline Garrett (Intern)"),
                       p("Sponsor: Gigi Jones, National Science Foundation (NSF), National Center for Science and Engineering (NCSES)"),
+                      
                       h5("SDAD/DSPG"),
                       p("The Social and Decision Analytics Division (SDAD) is one of three research divisions within the Biocomplexity Institute and Initiative at the University of Virginia.
                         SDAD combines expertise in statistics and social and behavioral sciences to develop evidence-based research
@@ -70,6 +71,11 @@ ui <- fluidPage(
                       fluidRow(style = "margin-top:100px",
                                column(3, h5("Occupation Information Network (O*NET)")),
                                column(6, wellPanel(p(style = "font-size:15px","O*NET is a program sponsored by the Department of Labor that establishes and maintains a framework for organizing occupational data aligned with the Bureau of Labor Statistics (BLS) Standard Occupation Classification (SOC) system. The SOC system is the federal standard for classifying workers into occupations based on work performed. We scraped SOC and credential data on the 133 STW occupations from O*NET. We were particularly interested in how credentials and occupations were connected. Thus, for each SOC, we collected information on the Certification Names associated with it, the Certifying Organization for that certification, and the Type of certification, which is a measure of specificity (i.e. “basic” or “advanced.”) This data source was crucial to the majority of our work, and more information on how we collected it can be found on the methods tab.")))
+                      ),
+                      hr(),
+                      fluidRow(style = "margin-top:100px",
+                               column(3, h5("Virginia Community College Industry Credentials")),
+                               column(6, wellPanel(p(style = "font-size:15px","Virginia’s Community Colleges focus on cultivating a skilled workforce that best matches the needs of regional businesses. Workforce training at Virginia’s Community Colleges includes more than 400 different industry-recognized credentials. These include full industry certifications, from a recognized industry, trade, or professional association validating essential skills of a particular occupation and pathway industry certifications, which may consist of entry-level exams as a component of a suite of exams in an industry certification program leading toward full certification.")))
                       )
                       
                       
@@ -205,15 +211,19 @@ ui <- fluidPage(
                         ),
                         
                         
-                        tabPanel("Boxplots",style="margin:20px",
-                                 h5("Boxplots", align = "center"),
-                                 p(style = "margin-top:25px","To visualize the relationships between the named credentials within the two main datasets of interest, O*NET and Burning Glass, we created boxplots. One natural question to ask is whether there are more precise matches in how credentials are referenced within certain types of jobs. Within the Skilled Technical Workforce, there are 14 occupational groups."),
+                        tabPanel("Boxplots - Confidence of Text Matching",style="margin:20px",
+                                 h5("Boxplots - Confidence of Text Matching", align = "center"),
+                                 p(style = "margin-top:25px","To visualize the relationships between the named credentials, we created boxplots. One natural question to ask is whether there are more precise matches in how credentials are referenced within certain types of jobs. Within the Skilled Technical Workforce, there are 14 occupational groups."),
                                  #https://www.bls.gov/soc/2018/major_groups.htm
                                  
                                  p("The boxplot below shows the confidences for our text matching algorithm between Burning Glass credentials and O*NET credentials for each of these occupational groups. While some groups' confidences are somewhat higher than others, all results are somewhat low. This highlights the gaps between industries, governments, and educational institutions, and shows these gaps manifest even in the language used to discuss occupations and credentials. " ),
                                  #br(),
                                  #p("Originally, the dataset contained 1,942,855 data entries. Given a restriction on memory and running power, we decided to only have unique and complete entries as it diminished the dataset by 96.2% to 73, 688 entries, while still fulfilling our main goal of understanding what companies are producing innovation. The visualization [above/below] demonstrates the total percentage of data entries that passed our validity checks.  About 78.3% of the total unique entries passed the validity check, 100% of the entries were published after 2010, and 91.7% of the entries contained valid company codes.  "),
                                  img(src = "onetbgtconfidence.png", height = 600, width = 1000),
+                                 p("We can also look at the confidences when matching Burning Glass data to the Virginia Community College offerings. Again, confidences are pretty uniformly low. The variances, however, are higher for these comparisons."),
+                                 img(src = "vabgt.png", height = 600, width = 1000),
+                                 p("For Virginia Community College to O*NET comparisons, we were interested in certifying organizations. We did not use occupational groups as supplementary information when making these comparisons. Comparisons across certifying organizations could technically be made, but there are over 200, so we do not include a boxplot here.")
+                                 
                                  
                                  
                         ),#end results tab 
@@ -258,6 +268,7 @@ ui <- fluidPage(
                                                                                         "Installation, Maintenance, and Repair Occupations",
                                                                                         "Production Occupations",
                                                                                         "Transportation and Material Moving Occupations")),
+                                     uiOutput("occ_descr"),
                                      
                                      img(height = "100%", width = "100%", src = "test.png")),
                                    #tableOutput("nettab2")),
@@ -426,6 +437,12 @@ server <- function(input, output) {
     
     
   }, deleteFile = FALSE)
+  
+  output$"occ_descr" <- renderUI({
+    if (input$occ_group == "Entire Network"){
+      HTML("<ul><li>11: Management</li><li>13: Business and Financial Operations</li><li>17: Archictecture and Engineering</li><li>19: Life, Physical, and Social Science</li><li>27: Art, Design, Entertainment, Sports, and Media</li><li>29: Healthcare Practitioners and Technical Occupations</li><li>33: Protective Service</li><li>35: Food Preparation and Serving</li><li>43: Office and Administrative Support</li><li>45: Farming, Fishing, and Forestry</li><li>47: Construction and Extraction</li><li>49: Installation, Maintenance, and Repair</li><li>51: Production Occupations</li><li>53: Transportation and Material Moving</li></ul>")
+    }
+  })
   
   
   
