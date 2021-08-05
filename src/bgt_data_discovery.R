@@ -44,16 +44,20 @@ stw <- read_xlsx("STW_2021 (1).xlsx")
 # Transforming the STW data 
 stw$SOC <- gsub("-", "", stw$SOC) # removing - in soc code 
 stw$SOC <- as.integer(stw$SOC) # making soc code integer 
-# View(stw)
+names(stw$SOC) <-"soc"
+View(stw)
+
+names(stw)[names(stw) == "SOC"] <- "soc"
 
 # Transforming BGT data 
 bgt$soc <- gsub("-", "", bgt$soc) # removing - in soc code 
 bgt$soc <- as.integer(bgt$soc) # making soc code an integer  
-
+library(plyr)
 # Joining the data source bgt and stw 
-merged <- merge(bgt, stw, by.x = "soc", by.y = "SOC")  # merging on soc variable 
+merged <- merge(bgt, stw, by.x = "soc", by.y = "soc")  # merging on soc variable 
+merged1 <- join(bgt, stw, by= "soc",)  # merging on soc variable 
 # merged_no_na <- merged[is.na(merged$NAME) == FALSE,] # removing variables with no name 
-
+colSums(merged)
 
 # Joining the data source bgt_main (with no na's and no non-stw jobs) and bgt cert 
 merged_cert <- merge(merged, bgt_cert, by.x = "id", by.y = "id") # merging on id variable 
@@ -86,7 +90,7 @@ bgt_profile <- read.csv("profile.txt")
 
 ### Completness after manipulation 
 # Count
-sumNA <- colSums(is.na(merged_cert))
+sumNA <- colSums(is.na(merged))
 sumNA
 # Percentage
 sumNA_percent <- 1 - (sumNA/nrow(merged_cert))
@@ -94,7 +98,7 @@ sumNA_percent
 
 ### Uniqueness after manipulation
 # Count
-sumUNI <- sapply(merged_cert, n_distinct)
+sumUNI <- sapply(stw, n_distinct)
 sumUNI
 # Percentage
 sumUNI_precent <- sumUNI/nrow(merged_cert)*100
