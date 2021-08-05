@@ -253,7 +253,7 @@ ui <- fluidPage(
                         #<<<<<<< HEAD
                         tabPanel("Network Analysis - STW by Major Occupation Group", style = "margin:20px",
                                  h5("STW by Major Occupation Group"),
-                                 p("The network is displayed for the all 133 STW occupations and separately for the seven major occupation groups that contain more than two STW occupations. The lines connecting the STW occupation titles to certifications are used to identify the 2019-2029 Bureau of Labor Employment Projections. The two shades of blue indicate occupations that will decline in number over the coming years, the two shades of yellow identify occupations that will increase, and red indicates occupations whose numbers will increase by more than 50 percent."),
+                                 p("The network is displayed for the all 133 STW occupations and separately for seven of the major occupation groups within the STW. The squares represent occupations, and they are colored to represent 2019-2029 Bureau of Labor Employment Projections. The two shades of blue indicate occupations that will decline in number over the coming years, the two shades of yellow identify occupations that will increase, and red indicates occupations whose numbers will increase by more than 50 percent."),
                                  br(),
                                  br(),
                                  br(),
