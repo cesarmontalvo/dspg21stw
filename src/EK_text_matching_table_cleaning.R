@@ -53,12 +53,38 @@ boxplot(confidence_cert~SOCGroup,confbysoc,ylab="",xlab="Confidence of Match",
 abline(v=median(confbysoc$confidence_cert),col="blue")
 
 
+conf<-vabgt[,c(5,7)]
+conf$SOCGroup<-substr(conf$SOC,1,2)
+par(mgp=c(3,1,0))
+par(mar=c(5,30,4,2)+0.1)
+boxplot(confidence_cert~SOCGroup,conf,ylab="",xlab="Confidence of Match",
+        main="Confidence of Credential Match (Burning Glass to Virginia Community Colleges) by Occupational Group",col="#E87404",horizontal = T,
+        names=c("Management","Business and Financial Operations",
+                "Architecture and Engineering Occupation","Life, Physical, and Social Science",
+                "Art, Design, Entertainment, Sports, And Media","Healthcare Practitioners and Technical Occupation",
+                "Protective Service","Food Preparation and Serving Related",
+                "Office and Administrative Support","Farming, Fishing, and Forestry",
+                "Construction and Extraction","Installation, Maintenance, and Repair","Production",
+                "Transportation and Material Moving"),las=1)
 
 
 
 
 
-
+conf<-onetva[,c(5,9)]
+par(mgp=c(3,1,0))
+par(mar=c(5,30,4,2)+0.1)
+boxplot(confidence_cert~Awarding.Entity,conf,ylab="",xlab="Confidence of Match",
+        main="Confidence of Credential Match (Burning Glass to Virginia Community Colleges) by Occupational Group",col="#E87404",horizontal = T)
+        
+        
+        names=c("Management","Business and Financial Operations",
+                "Architecture and Engineering Occupation","Life, Physical, and Social Science",
+                "Art, Design, Entertainment, Sports, And Media","Healthcare Practitioners and Technical Occupation",
+                "Protective Service","Food Preparation and Serving Related",
+                "Office and Administrative Support","Farming, Fishing, and Forestry",
+                "Construction and Extraction","Installation, Maintenance, and Repair","Production",
+                "Transportation and Material Moving"),las=1)
 
 
 
